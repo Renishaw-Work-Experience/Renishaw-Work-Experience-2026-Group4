@@ -1,6 +1,17 @@
 import sqlite3
 
-sql_statements = [ 
+sql_statements = [
+    # Remove all data from the tables
+    """
+        DELETE FROM Accounts;
+    """,
+    """
+        DELETE FROM Messages;
+    """,
+    """
+        DELETE FROM ChatRooms;
+    """,
+    # Insert new test data into the tables
     """
         INSERT INTO Accounts (username, password) VALUES ('username1', 'password1');
     """
@@ -12,7 +23,10 @@ sql_statements = [
         INSERT INTO Accounts (username, password) VALUES ('username3', 'password3');
     """,
     """
-        INSERT INTO Messages (senderID, chatRoomID, content) VALUES (111, 222, "Test message");
+        INSERT INTO ChatRooms (name, user1ID, user2ID) VALUES ('Test chat room', 1, 2);
+    """,
+    """
+        INSERT INTO Messages (senderID, chatRoomID, content) VALUES (1, 1, "Test message");
     """,
 ]
 

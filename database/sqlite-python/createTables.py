@@ -22,8 +22,8 @@ sql_statements = [
         CREATE TABLE IF NOT EXISTS ChatRooms (
             roomID INTEGER PRIMARY KEY,
             name text NOT NULL,
-            user1ID INTEGER NOT NULL,
-            user2ID INTEGER NOT NULL,
+            user1ID INTEGER,
+            user2ID INTEGER,
             user3ID INTEGER,
             user4ID INTEGER,
             user5ID INTEGER,

@@ -1,6 +1,6 @@
 import sqlite3
 
-sql_statements = [ 
+sql_statements = [
     """CREATE TABLE IF NOT EXISTS Accounts (
             accountID INTEGER PRIMARY KEY, 
             username text NOT NULL, 
@@ -13,27 +13,19 @@ sql_statements = [
             messageID INTEGER PRIMARY KEY,
             senderID INTEGER NOT NULL,
             chatRoomID INTEGER NOT NULL,
-            content text NOT NULL,
+            content TEXT NOT NULL,
             TimeSent DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
             FOREIGN KEY (senderID) REFERENCES Accounts(accountID),
             FOREIGN KEY (chatRoomID) REFERENCES ChatRooms(roomID)
         );
         """,
     """
-        CREATE TABLE IF NOT EXISTS ChatRooms (
-            roomID INTEGER PRIMARY KEY,
-            name text NOT NULL,
-            user1ID INTEGER,
-            user2ID INTEGER,
-            user3ID INTEGER,
-            user4ID INTEGER,
-            user5ID INTEGER,
-            FOREIGN KEY (user1ID) REFERENCES Accounts(AccountID),
-            FOREIGN KEY (user2ID) REFERENCES Accounts(AccountID),
-            FOREIGN KEY (user3ID) REFERENCES Accounts(AccountID),
-            FOREIGN KEY (user4ID) REFERENCES Accounts(AccountID),
-            FOREIGN KEY (user5ID) REFERENCES Accounts(AccountID)
-        );""",
+        CREATE TABLE IF NOT EXISTS Sessions (
+            sessionID TEXT PRIMARY KEY DEFAULT (hex(randomblob(16))),
+            userID INTEGER NOT NULL,
+            FOREIGN KEY (userID) REFERENCES Accounts(accountID)
+        );
+        """,
 ]
 
 # Create an account:

@@ -47,4 +47,5 @@ sendimage = customtkinter.CTkImage(light_image=Image.open(os.path.join(script_di
 sendbtn = customtkinter.CTkButton(app, image=sendimage, text="", fg_color="deep sky blue", corner_radius=50)
 sendbtn.place(relx=0.89, rely=0.84, relwidth=0.07, relheight=0.11)
 
-app.mainloop()
+if __name__ == "__main__":
+    app.mainloop()

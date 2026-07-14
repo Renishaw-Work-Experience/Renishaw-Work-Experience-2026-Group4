@@ -6,9 +6,26 @@ send_listener = "/listener"
 request_chat_history_listener = "/listener/chat_history"
 
 #RoomID, message, senderID, receiverID, timestamp added in function
+def login( username, password):
+    try:
+        login_data = {"username": username, "password": password}
+        response = requests.post(address + "/listener/login", json=login_data)
+        if response.status_code == 200:
+            data = response.json()
+            print("Login successful:", data)
+            return session(data.get("user_id"), data.get("session_id"))
+        else:
+            print("Failed to login. Status code:", response.status_code)
+            return None, None
+    except Exception as e:
+        print("Error during login:", e)
+        return None, None
+    
+
 class session:
-    def __init__(self,username,password):
-        self.senderID, self.sessionID = self.login(username,password)
+    def __init__(self,senderID,sessionID):
+        self.senderID, self.sessionID = senderID,sessionID
+
     def send_message(self,data):
         try:
             send_data = data
@@ -65,20 +82,7 @@ class session:
             print("Error retrieving chat room info:", e)
             
 
-    def login(self, username, password):
-        try:
-            login_data = {"username": username, "password": password}
-            response = requests.post(address + "/listener/login", json=login_data)
-            if response.status_code == 200:
-                data = response.json()
-                print("Login successful:", data)
-                return data.get("user_id"), data.get("session_id")
-            else:
-                print("Failed to login. Status code:", response.status_code)
-                return None, None
-        except Exception as e:
-            print("Error during login:", e)
-            return None, None
+   
 
 def ID_from_username(username):
     data = {"username": username}
@@ -94,13 +98,13 @@ def ID_from_username(username):
         return None
 
 
-
-session = session("user1")
-session.send_message({"message": "Hello, server!"})
-
-
-session.create_chat_room("MyChatRoom", ["user1", "user2"])
-session.invite_to_chat("MyChatRoom", "user3")
+if __name__ == "__main__":
+    session = session("user1")
+    session.send_message({"message": "Hello, server!"})
 
 
-session.request_chat_history("MyChatRoom")
+    session.create_chat_room("MyChatRoom", ["user1", "user2"])
+    session.invite_to_chat("MyChatRoom", "user3")
+
+
+    session.request_chat_history("MyChatRoom")

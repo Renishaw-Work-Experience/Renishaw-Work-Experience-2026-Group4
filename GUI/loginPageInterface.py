@@ -2,6 +2,15 @@ import tkinter as tk
 from tkinter import ttk
 from ttkbootstrap import Style
 import customtkinter as ctk
+import sys
+from pathlib import Path
+import chatinterface2
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+
+from client import sender
 
 main = tk.Tk()
 
@@ -61,6 +70,15 @@ userPasswordInputField.place(relx=inputFieldxPos, rely=0.4, relwidth=inputFieldW
 def userSubmitData():
     username = usernameInputField.get()
     password = userPasswordInputField.get()
+    session = sender.login(username,password)
+    #session = True #test
+    if session == None:
+        return
+        #do something when login fails
+    else:
+        chatinterface2.app.mainloop()
+        pass
+
     print(f"Username: {username}")
     print(f"Password: {password}")
 

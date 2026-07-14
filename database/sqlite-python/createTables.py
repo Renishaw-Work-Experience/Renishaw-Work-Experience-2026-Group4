@@ -2,25 +2,10 @@ import sqlite3
 
 sql_statements = [
     """CREATE TABLE IF NOT EXISTS Accounts (
-            accountID INTEGER PRIMARY KEY,
-            username TEXT NOT NULL,
-            password TEXT NOT NULL
-        );
-        """,
-    """
-        CREATE TABLE IF NOT EXISTS ChatRooms (
-            roomID INTEGER PRIMARY KEY,
-            name TEXT NOT NULL,
-            user1ID INTEGER,
-            user2ID INTEGER,
-            user3ID INTEGER,
-            user4ID INTEGER,
-            user5ID INTEGER,
-            FOREIGN KEY (user1ID) REFERENCES Accounts(accountID),
-            FOREIGN KEY (user2ID) REFERENCES Accounts(accountID),
-            FOREIGN KEY (user3ID) REFERENCES Accounts(accountID),
-            FOREIGN KEY (user4ID) REFERENCES Accounts(accountID),
-            FOREIGN KEY (user5ID) REFERENCES Accounts(accountID)
+            accountID INTEGER PRIMARY KEY, 
+            username text NOT NULL, 
+            password text NOT NULL,
+            salt text NOT NULL
         );
         """,
     """

@@ -43,6 +43,22 @@ sql_statements = [
             FOREIGN KEY (userID) REFERENCES Accounts(accountID)
         );
         """,
+    """
+        CREATE TABLE IF NOT EXISTS ChatRooms (
+            roomID INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            userID1 INTEGER NOT NULL,
+            userID2 INTEGER NOT NULL,
+            userID3 INTEGER,
+            userID4 INTEGER,
+            userID5 INTEGER,
+            FOREIGN KEY (userID1) REFERENCES Accounts(accountID),
+            FOREIGN KEY (userID2) REFERENCES Accounts(accountID),
+            FOREIGN KEY (userID3) REFERENCES Accounts(accountID),
+            FOREIGN KEY (userID4) REFERENCES Accounts(accountID),
+            FOREIGN KEY (userID5) REFERENCES Accounts(accountID)
+        );
+        """
 ]
 
 # Create an account:

@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from functools import reduce
 
 # Folder where python_file.py lives
 script_dir = os.path.dirname(os.path.abspath(__file__))

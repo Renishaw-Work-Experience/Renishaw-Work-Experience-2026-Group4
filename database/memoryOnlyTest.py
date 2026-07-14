@@ -1,20 +1,49 @@
 import sqlite3
 import os
-from functools import reduce
 
-# Folder where python_file.py lives
-script_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Build the path to the database
-db_path = os.path.join(script_dir, "..", "database", "sqlite-python", "my.db")
-
-# Convert to absolute path
-db_path = os.path.abspath(db_path)
+def setUpDatabase():
+    setupQueries = [ 
+        """CREATE TABLE IF NOT EXISTS Accounts (
+                accountID INTEGER PRIMARY KEY, 
+                username text NOT NULL, 
+                password text NOT NULL
+            );
+        """,
+        """
+            CREATE TABLE IF NOT EXISTS Messages (
+                messageID INTEGER PRIMARY KEY,
+                senderID INTEGER NOT NULL,
+                chatRoomID INTEGER NOT NULL,
+                content text NOT NULL,
+                TimeSent DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                FOREIGN KEY (senderID) REFERENCES Accounts(accountID),
+                FOREIGN KEY (chatRoomID) REFERENCES ChatRooms(roomID)
+            );
+        """,
+        """
+            CREATE TABLE IF NOT EXISTS ChatRooms (
+                roomID INTEGER PRIMARY KEY,
+                name text NOT NULL,
+                user1ID INTEGER,
+                user2ID INTEGER,
+                user3ID INTEGER,
+                user4ID INTEGER,
+                user5ID INTEGER,
+                FOREIGN KEY (user1ID) REFERENCES Accounts(AccountID),
+                FOREIGN KEY (user2ID) REFERENCES Accounts(AccountID),
+                FOREIGN KEY (user3ID) REFERENCES Accounts(AccountID),
+                FOREIGN KEY (user4ID) REFERENCES Accounts(AccountID),
+                FOREIGN KEY (user5ID) REFERENCES Accounts(AccountID)
+            );
+        """,
+    ]
+    for query in setupQueries:
+        runSQL(query)
 
 
 def runSQL(statement):
     try:
-        with sqlite3.connect(db_path) as conn:
+        with sqlite3.connect(":memory:") as conn:
             cursor = conn.cursor()
             cursor.execute(statement)
             conn.commit()
@@ -32,9 +61,9 @@ def addAccount(username, password):
         INSERT INTO Accounts (username, password) VALUES ("{username}", "{password}");
     """)
 
-def addChatRoom(name, members):
+def addChatRoom(name, user1ID, user2ID):
     runSQL(f"""
-           INSERT INTO ChatRooms (name, {", ".join([f"userID{members.index(x) + 1}" for x in members])}) VALUES ({name}, {str(members)[1:-1]});
+        INSERT INTO ChatRooms (name, user1ID, user2ID) VALUES ("{name}", {user1ID}, {user2ID});
     """)
 
 def getUsernameByID(userID):
@@ -45,29 +74,14 @@ def getUsernameByID(userID):
         return None
 
 def printChatRoom(roomID):
-    rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID} ORDER BY TimeSent ASC;")
+    rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID} ORDER BY TimeSent ASC;") # Collect all messages in the chat room with a matching ID
     for row in rows:
-        print(f"\n{getUsernameByID(row[1])} - {row[4]}")
-        print(f"  {row[3]}")
-
-def getData(table_name, fields : list = "*"): # Test data retrieval
-    if fields == "*":
-        fields_str = "*"
-    else:
-        fields_str = ", ".join(fields)
-    try:
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(f"SELECT {fields_str} FROM {table_name};")
-            rows = cursor.fetchall()
-            return rows
-    except sqlite3.OperationalError as e:
-        print("Failed to retrieve data:", e)
-        return None
+        print(f"\n{getUsernameByID(row[1])} - {row[4]}") # Collect the username of the sender and the time sent
+        print(f"  {row[3]}") # Collect and print the message contents
     
 def getDataByQuery(query):
     try:
-        with sqlite3.connect(db_path) as conn:
+        with sqlite3.connect(":memory:") as conn:
             cursor = conn.cursor()
             cursor.execute(query)
             rows = cursor.fetchall()
@@ -75,9 +89,28 @@ def getDataByQuery(query):
     except sqlite3.OperationalError as e:
         print("Failed to retrieve data:", e)
         return None
+    
+def checkData(table, field, data):
+    try:
+        with sqlite3.connect(":memory:") as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT * FROM {table} WHERE {field} = '{data}';")
+            rows = cursor.fetchall()
+            return len(rows) > 0
+    except sqlite3.OperationalError as e:
+        print("Failed to check data:", e)
+        return False
 
 # Main UI
-print("\n -- RENICHAT DATABASE ACCESSER - BUILD 1.0.1 -- \n")
+print("\n -- RENICHAT MemoryOnlyTest -- \n")
+
+setUpDatabase()
+
+account = None
+chatRoom = None
+run = True
+
+
 
 run = True
 while run:

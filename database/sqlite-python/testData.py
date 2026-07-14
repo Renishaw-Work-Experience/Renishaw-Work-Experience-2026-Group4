@@ -26,8 +26,20 @@ sql_statements = [
         INSERT INTO ChatRooms (name, user1ID, user2ID) VALUES ('Test chat room', 1, 2);
     """,
     """
-        INSERT INTO Messages (senderID, chatRoomID, content) VALUES (1, 1, "Test message");
+        INSERT INTO Messages (senderID, chatRoomID, content) VALUES (1, 1, "Test message 1");
     """,
+    """
+        INSERT INTO Messages (senderID, chatRoomID, content) VALUES (1, 1, "Test message 2");
+    """,
+    """
+        INSERT INTO Messages (senderID, chatRoomID, content) VALUES (2, 1, "Test message 3");
+    """,
+    """
+        INSERT INTO Messages (senderID, chatRoomID, content) VALUES (1, 2, "Test message 4");
+    """,
+    """
+        INSERT INTO Messages (senderID, chatRoomID, content) VALUES (2, 2, "Test message 5");
+    """
 ]
 
 # create a database connection

@@ -81,7 +81,7 @@ def userSubmitData():
             main.destroy()
         except Exception:
             pass
-        chatinterface2.app.mainloop()
+        chatinterface2.app.mainloop(session)
 
 
     print(f"Username: {username}")

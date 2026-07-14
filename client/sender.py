@@ -44,8 +44,13 @@ class session:
             response = requests.get(address + request_chat_history_listener, params={"RoomID": room_id})
             if response.status_code == 200:
                 print("Chat history received:", response.json())
+                return(response["messages"])
             else:
+                #{"status": "chat history requested", "room_id": RoomID,
+                #"messages": [{"timestamp": time.time(), "message": "Sample message","senderID": "user1"}]}), 200
+
                 print("Failed to retrieve chat history. Status code:", response.status_code)
+                return  [{"timestamp": time.time(), "message": "Failed to retrieve chat history. ","senderID": "system"}]
         except Exception as e:
             print("Error retrieving chat history:", e)
 

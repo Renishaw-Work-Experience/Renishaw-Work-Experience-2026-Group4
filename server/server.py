@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import time
 import sys
 from pathlib import Path
+import secrets
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -11,10 +12,17 @@ from database import database
 
 app = Flask(__name__)
 
+sessionIDs = {}
+
 def verifyUser(sessionID, userID):
     if sessionID is None or userID is None:
         return False
-    return True
+    try:
+        if sessionIDs[sessionID] == userID:
+            return True
+    except KeyError:
+        return False
+    return False
 
 
 def requireAuthenticatedUser():
@@ -54,7 +62,7 @@ def sendMessage():
 
 @app.route('/listener/chat_history', methods=['GET'])
 def requestChatHistory():
-    auth_error = require_authenticated_user()
+    auth_error = requireAuthenticatedUser()
     if auth_error:
         return auth_error
 
@@ -87,7 +95,7 @@ def createChatRoomRequest():
 
 @app.route('/listener/chat_invite', methods=['POST'])
 def inviteToChat():
-    auth_error = require_authenticated_user()
+    auth_error = requireAuthenticatedUser()
     if auth_error:
         return auth_error
 
@@ -106,7 +114,7 @@ def inviteToChat():
 
 @app.route('/listener/get_user_id', methods=['POST'])
 def getUserId():
-    auth_error = require_authenticated_user()
+    auth_error = requireAuthenticatedUser()
     if auth_error:
         return auth_error
 
@@ -146,6 +154,16 @@ def getChatRoomInfo():
 @app.route('/listener/login', methods=['POST'])
 def login():
     data = request.args 
+    password = data.get("password")
+    username = data.get("username")
+    #actually verify login later
+    if True:
+        sessionID =  secrets.token_hex(16)
+        user_id =
+        pass
+    else:
+        pass
+
 
 
 if __name__ == '__main__':

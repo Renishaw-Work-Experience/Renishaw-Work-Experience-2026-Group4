@@ -3,17 +3,52 @@ import sys
 import time
 
 from flask import Flask, request, jsonify
+import time
+import sys
+from pathlib import Path
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
 
 from database import database
 
 app = Flask(__name__)
 
+def verifyUser(sessionID, userID):
+    if sessionID is None or userID is None:
+        return False
+    return True
+
+
+def requireAuthenticatedUser():
+    data = request.get_json(silent=True) or {}
+    if not data and request.args:
+        data = request.args.to_dict()
+
+    session_id = (
+        data.get("sessionID")
+        or data.get("session_id")
+        or request.headers.get("sessionID")
+        or request.headers.get("SessionID")
+    )
+    user_id = (
+        data.get("userID")
+        or data.get("user_id")
+        or request.headers.get("userID")
+        or request.headers.get("UserID")
+    )
+
+    if not verify_user(session_id, user_id):
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+    return None
+
 @app.route('/listener', methods=['GET', 'POST'])
-def listen():
+def sendMessage():
+    auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
     if request.method == 'POST':
         data = request.get_json()
         # Process incoming data
@@ -22,7 +57,11 @@ def listen():
     return jsonify({"status": "listening"}), 200
 
 @app.route('/listener/chat_history', methods=['GET'])
-def request_chat_history():
+def requestChatHistory():
+    auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
+
     data = request.args
     data_dict = data.to_dict()
     roomID = data_dict["roomID"]
@@ -32,13 +71,18 @@ def request_chat_history():
                      "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
 
 @app.route('/listener/chat_create', methods=['POST'])
-def create_chat_room_request():
+def createChatRoomRequest():
+    auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
+
     data = request.get_json()
     data_dict = data.to_dict()
     try:
-        name = data["name"]
-        members = data["members"]
-        response = _call_database("create_chat_room", name, members, data.get("sender"))
+        name = data_dict["name"]
+        members = data_dict["members"] + [data_dict["sender"]]
+        group_id = name + "_" + data_dict["sender"] + "_" + str(int(time.time()))
+        response = database.create_chat_room(name, members)
         if response is None:
             return jsonify({"status": "error", "message": "Failed to create chat room"}), 500
 
@@ -47,8 +91,13 @@ def create_chat_room_request():
     return jsonify({"status": "chat created", "data": data}), 200
 
 @app.route('/listener/chat_invite', methods=['POST'])
-def invite_to_chat():
-    data = _get_request_data()
+def inviteToChat():
+    auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
+
+    data = request.get_json()
+    data_dict = data.to_dict()
     try:
         room_id = data["roomID"]
         user_id = data["UserID"]
@@ -61,8 +110,13 @@ def invite_to_chat():
     return jsonify({"status": "user invited", "data": data}), 200
 
 @app.route('/listener/get_user_id', methods=['POST'])
-def get_user_id():
-    data = _get_request_data()
+def getUserId():
+    auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
+
+    data = request.get_json()
+    data_dict = data.to_dict()
     try:
         username = data["username"]
         
@@ -73,7 +127,11 @@ def get_user_id():
         return jsonify({"status": "error", "message": "Missing username in request data"}), 400
 
 @app.route('/listener/chat_info', methods=['GET'])
-def get_chat_room_info():
+def getChatRoomInfo():
+    auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
+
     data = request.args
     data_dict = data.to_dict()
     try:
@@ -88,7 +146,12 @@ def get_chat_room_info():
         return jsonify({"status": "chat info retrieved", "chat_info": chat_info}), 200
 
     except KeyError:
-        return jsonify({"status": "error", "message": "Missing roomID in request data"}), 400
+        return jsonify({"status": "error", "message": "Missing RoomID in request data"}), 400
+
+@app.route('/listener/login', methods=['POST'])
+def login():
+    data = request.args 
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)   

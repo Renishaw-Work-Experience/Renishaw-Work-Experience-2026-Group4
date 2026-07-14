@@ -1,0 +1,140 @@
+import sys
+sys.path.append("..\\database")
+
+import asyncio, websockets
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+
+from database import database
+
+CONNECTED_CLIENTS = {}
+
+import hashlib
+import base64
+import socket
+
+MAGIC_STRING = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+
+def handle_handshake(client_socket):
+    # Receive the HTTP request
+    request = client_socket.recv(1024).decode('utf-8')
+    
+    # Extract the Sec-WebSocket-Key
+    key = None
+    for line in request.split('\r\n'):
+        if line.startswith('Sec-WebSocket-Key:'):
+            key = line.split(':', 1)[1].strip()
+            break
+            
+    if not key:
+        client_socket.close()
+        return
+
+    # Calculate the Accept key
+    sha1 = hashlib.sha1((key + MAGIC_STRING).encode('utf-8')).digest()
+    accept_key = base64.b64encode(sha1).decode('utf-8')
+    
+    # Send the 101 Switching Protocols response
+    response = (
+        "HTTP/1.1 101 Switching Protocols\r\n"
+        "Upgrade: websocket\r\n"
+        "Connection: Upgrade\r\n"
+        "Sec-WebSocket-Accept: " + accept_key + "\r\n"
+        "\r\n"
+    )
+    
+    client_socket.send(response.encode('utf-8'))
+    print("Handshake completed")   
+
+def start_server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(('0.0.0.0', 8080))
+    server_socket.listen(5)
+    print("Server listening on port 8080...")
+
+    while True:
+        # 1. Accept the new TCP connection
+        client_socket, address = server_socket.accept()
+        print(f"Connection from {address}")
+        
+        try:
+            handle_handshake(client_socket)
+            
+            # 3. If successful, proceed to listen for WebSocket messages
+            while True:
+                data = client_socket.recv(1024)
+                if not data:
+                    break
+                # Process WebSocket frames...
+                
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            client_socket.close()
+
+
+async def broadcast(message, room_id, sender_id):
+    """
+    Sends a message to clients in group
+    """
+
+    recipients = database.chat_room_info(room_id)["members"]
+    
+
+    if not CONNECTED_CLIENTS:
+        return
+
+    # Filter out the sender if necessary, otherwise send to everyone
+    targets = []
+    
+
+    CONNECTED_CLIENTS_keys = CONNECTED_CLIENTS.keys()
+    sender_websocket = CONNECTED_CLIENTS[sender_id]
+
+    for client in recipients:
+        if client in CONNECTED_CLIENTS_keys:
+             if client != sender_websocket: 
+                targets.append(CONNECTED_CLIENTS[client])
+    
+    if targets:
+        # asyncio.gather runs all the send operations concurrently
+        await asyncio.gather(*[client.send(message) for client in targets])
+
+async def handle_client(websocket, userID):
+    """
+    Handles the lifecycle of a single connected client.
+    """
+    # Register the new client
+    CONNECTED_CLIENTS[userID] = websocket
+    print(f"\n[Server]: New client connected. Total clients: {len(CONNECTED_CLIENTS)}")
+    await broadcast(f"[System]: A new user has joined the chat.", sender_websocket=websocket)
+
+    try:
+        # Loop and listen for incoming messages from this client
+        async for message in websocket:
+            print(f"[Received from client]: {message}")
+            # Broadcast the message to all OTHER clients
+            formatted_message = f"[User]: {message}"
+            await broadcast(formatted_message, sender_websocket=websocket)
+
+    except websockets.ConnectionClosed:
+        print("\n[Server]: Client connection closed unexpectedly.")
+    finally:
+        # Unregister the client when they disconnect
+        CONNECTED_CLIENTS.remove(websocket)
+        print(f"[Server]: Client disconnected. Total clients: {len(CONNECTED_CLIENTS)}")
+        await broadcast(f"[System]: A user has left the chat.")
+
+
+
+
+
+if __name__ == "__main__":
+    try:
+        start_server()
+    except KeyboardInterrupt:
+        print("\n[Server]: Server shut down manually.")

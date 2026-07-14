@@ -45,13 +45,15 @@ def getUsernameByID(userID):
 
 def getMessages(roomID, userID = None):
     rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID}{"" if userID == None else f"AND senderID = {userID}"} ORDER BY TimeSent ASC;")
-    return rows
+    messages = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4]} for row in rows]
+    return messages
 
 def printChatRoom(roomID):
-    rows = getMessages(roomID)
-    for row in rows:
-        print(f"\n{getUsernameByID(row[1])} - {row[4]}")
-        print(f"  {row[3]}")
+    messages = getMessages(roomID)
+    for message in messages:
+        print(f"\n{getUsernameByID(message["senderID"])} - {message["timeSent"]}")
+        print(f"  {message["content"]}")
+
 
 # def getData(table_name, fields : list = "*"): # Test data retrieval
 #     if fields == "*":

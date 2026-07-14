@@ -76,8 +76,13 @@ def userSubmitData():
         return
         #do something when login fails
     else:
+        # close the login window, then open the chat interface
+        try:
+            main.destroy()
+        except Exception:
+            pass
         chatinterface2.app.mainloop()
-        pass
+
 
     print(f"Username: {username}")
     print(f"Password: {password}")

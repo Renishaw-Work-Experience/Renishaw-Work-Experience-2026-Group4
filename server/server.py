@@ -11,12 +11,12 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from database import database
+import SQLite_Functions as database
 
 app = Flask(__name__)
 
 def verifyUser(sessionID, userID):
-    if sessionID is None or userID is None:
+    if sessionID is None or userID is None or not database.verifySession(sessionID, userID):
         return False
     return True
 

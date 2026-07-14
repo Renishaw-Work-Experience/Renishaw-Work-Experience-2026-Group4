@@ -51,6 +51,9 @@ def getAccountIDFromUsername(username):
 def getPasswordHashFromUsername(username):
     return getData("Accounts", "password", "username", username)
 
+def verifySession(sessionID, userID):
+    return getData("Sessions", "sessionID", "userID", userID) == sessionID
+
 def printChatRoom(roomID):
     rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID} ORDER BY TimeSent ASC;")
     for row in rows:

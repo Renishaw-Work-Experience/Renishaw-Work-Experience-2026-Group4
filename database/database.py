@@ -53,7 +53,7 @@ def printChatRoom(roomID):
     for message in messages:
         print(f"\n{getUsernameByID(message["senderID"])} - {message["timeSent"]}")
         print(f"  {message["content"]}")
-
+    
 
 # def getData(table_name, fields : list = "*"): # Test data retrieval
 #     if fields == "*":

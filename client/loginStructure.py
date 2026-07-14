@@ -35,6 +35,8 @@ while run:
                 print("Incorrect password.")
         else:
             print("Username not found.")
+    if choice == "0":
+        run = False
     while accountIDLogged != None:
         print("Main Functions will go here")
         print("Press enter to sign out")

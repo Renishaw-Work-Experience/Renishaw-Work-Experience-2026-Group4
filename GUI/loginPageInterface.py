@@ -1,9 +1,16 @@
+from time import sleep
 import tkinter as tk
 from tkinter import ttk
 from ttkbootstrap import Style
 import customtkinter as ctk
 
 main = tk.Tk()
+
+
+def on_close():
+    main.destroy()
+    raise SystemExit
+
 
 style = Style("flatly")
 main.title("GUI App")
@@ -14,7 +21,7 @@ chatroomName = "testRoom"
 
 isLoggingIn = True
 loginPageTitleText = "Log In"
-loginBtnText = "Log In"
+loginBtnText = "Sign Up"
 
 def toggleLogIn():
     global isLoggingIn, loginPageTitleText, loginBtnText
@@ -22,13 +29,16 @@ def toggleLogIn():
 
     if isLoggingIn:
         loginPageTitleText = "Log In"
-        loginBtnText = "Log In"
+        loginBtnText = "Sign Up"
     else:
         loginPageTitleText = "Sign Up"
-        loginBtnText = "Sign Up"
+        loginBtnText = "login"
 
     loginPageTitle.configure(text=loginPageTitleText)
     userLoginOrSignUpBTn.configure(text=loginBtnText)
+
+
+
 
 
 def resize_fonts(event):
@@ -43,6 +53,7 @@ def resize_fonts(event):
 
 
 main.bind("<Configure>", resize_fonts)
+main.protocol("WM_DELETE_WINDOW", on_close)
 
 pageBackgroundColor = "#f5f7fb"
 main.configure(background=pageBackgroundColor)
@@ -112,12 +123,17 @@ userLoginOrSignUpBTn = ctk.CTkButton(
 userLoginOrSignUpBTn.place(relx=0.4, rely=0.7, anchor="n")
 
 
+
 def userSubmitData():
+    global logginSuccessful, username
     username = usernameInputField.get()
     password = userPasswordInputField.get()
-    print(f"Username: {username}")
-    print(f"Password: {password}")
-
+    if username.strip() and password.strip():
+        print(f"Username: {username}")
+        print(f"Password: {password}")
+        logginSuccessful = True
+        updateSuccessOverlay()
+        main.after(3000, on_close)
 
 
 userSubmitDataBtn = ctk.CTkButton(
@@ -128,20 +144,51 @@ userSubmitDataBtn = ctk.CTkButton(
     hover_color="#4338ca",
     text_color="white"
 )
+
+#incorrectUserSubmission = ttk.Label(main, background=pageBackgroundColor, foreground="#FF0000")
 userSubmitDataBtn.place(relx=0.4, rely=0.6, anchor="n")
 
+logginSuccessful = False
+successFrame = None
+successLabel = None
+
+# username = usernameInputField.get(1.0, "end-1c")
+username = "test username"
+
+
+def updateSuccessOverlay():
+    global successFrame, successLabel, logginSuccessful, username
+
+    if logginSuccessful:
+        if successFrame is None:
+            style.configure("successFrame.TFrame", background="#d1fae5")
+            successFrame = ttk.Frame(main, style="successFrame.TFrame")
+            successFrame.place(relx=0.0, rely=0.0, relwidth=1.0, relheight=1.0, anchor="nw")
+
+            successLabel = ttk.Label(
+                successFrame,
+                text=f"Welcome, {username}!",
+                font=("Arial", 16),
+                background="#d1fae5",
+                foreground="#065f46"
+            )
+            successLabel.place(relx=0.5, rely=0.5, anchor="center")
+            main.after(3000, on_close)
+
+        successFrame.place(relx=0.0, rely=0.0, relwidth=1.0, relheight=1.0, anchor="nw")
+        successFrame.lift()
+    elif successFrame is not None:
+        successFrame.place_forget()
+
+# def checkIfValidSubmission():
+#     global userPasswordInputField, usernameInputField
+#     usernameinput = usernameInputField.get()
+#     userPasswordInput = userPasswordInputField.get()
+#     if userPasswordInput.strip() and usernameInputField.strip():
+#         print("")
+#     else:
+#         incorrectUserSubmission.place(relx=0.7, rely=0.8, anchor='n')
+
+#checkIfValidSubmission()
+updateSuccessOverlay()
 main.mainloop()
-
-i = 0
-while i < 10:
-    if isLoggingIn:
-        loginPageTitleText = "Log In"
-        loginBtnText = "Log In"
-        i += 1
-    else:
-        i += 1
-        loginPageTitleText = "Sign Up"
-        loginBtnText = "Sign Up"
-
-    
-

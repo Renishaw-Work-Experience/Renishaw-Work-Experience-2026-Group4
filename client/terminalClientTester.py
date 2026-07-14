@@ -114,6 +114,12 @@ while run:
         print("Enter a valid SQL statement:")
         custom_command = input("> ")
         runSQL(custom_command)
+    elif choice == "-2":
+        print("Enter a valid SQL SELECT query:")
+        custom_command = input("> ")
+        rows = getDataByQuery(custom_command)
+        for row in rows:
+            print(row)
     else:
         print("(!) Invalid choice")
     print()

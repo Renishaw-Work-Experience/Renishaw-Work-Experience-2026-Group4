@@ -1,8 +1,14 @@
-from flask import Flask, request, jsonify
+import os
+import sys
 import time
-import database
 
+from flask import Flask, request, jsonify
 
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from database import database
 
 app = Flask(__name__)
 
@@ -19,20 +25,20 @@ def listen():
 def request_chat_history():
     data = request.args
     data_dict = data.to_dict()
-    RoomID = data_dict["RoomID"]
+    roomID = data_dict["roomID"]
+    messages = database.getMessages(roomID)
 
-    return jsonify({"status": "chat history requested", "room_id": RoomID,
-                     "messages": [{"timestamp": time.time(), "message": "Sample message","senderID": "user1"}]}), 200
+    return jsonify({"status": "chat history requested", "room_id": roomID,
+                     "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
 
 @app.route('/listener/chat_create', methods=['POST'])
 def create_chat_room_request():
     data = request.get_json()
     data_dict = data.to_dict()
     try:
-        name = data_dict["name"]
-        members = data_dict["members"]
-        group_id = name + "_" + data_dict["sender"] + "_" + str(int(time.time()))
-        response = database.create_chat_room(name, members, data_dict["sender"])
+        name = data["name"]
+        members = data["members"]
+        response = _call_database("create_chat_room", name, members, data.get("sender"))
         if response is None:
             return jsonify({"status": "error", "message": "Failed to create chat room"}), 500
 
@@ -42,12 +48,11 @@ def create_chat_room_request():
 
 @app.route('/listener/chat_invite', methods=['POST'])
 def invite_to_chat():
-    data = request.get_json()
-    data_dict = data.to_dict()
+    data = _get_request_data()
     try:
-        room_id = data_dict["RoomID"]
-        user_id = data_dict["UserID"]
-        response = database.add_member(room_id, user_id)
+        room_id = data["roomID"]
+        user_id = data["UserID"]
+        response = _call_database("add_member", room_id, user_id)
         if response is None:
             return jsonify({"status": "error", "message": "Failed to invite user to chat room"}), 500
 
@@ -57,10 +62,9 @@ def invite_to_chat():
 
 @app.route('/listener/get_user_id', methods=['POST'])
 def get_user_id():
-    data = request.get_json()
-    data_dict = data.to_dict()
+    data = _get_request_data()
     try:
-        username = data_dict["username"]
+        username = data["username"]
         
         user_id = "user_" + username
         return jsonify({"status": "user found", "user_id": user_id}), 200
@@ -73,7 +77,7 @@ def get_chat_room_info():
     data = request.args
     data_dict = data.to_dict()
     try:
-        room_id = data_dict["RoomID"]
+        room_id = data_dict["roomID"]
         
         chat_info = {
             "room_id": room_id,
@@ -84,7 +88,7 @@ def get_chat_room_info():
         return jsonify({"status": "chat info retrieved", "chat_info": chat_info}), 200
 
     except KeyError:
-        return jsonify({"status": "error", "message": "Missing RoomID in request data"}), 400
+        return jsonify({"status": "error", "message": "Missing roomID in request data"}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)   

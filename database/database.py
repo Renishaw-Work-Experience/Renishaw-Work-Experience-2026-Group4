@@ -45,13 +45,15 @@ def getUsernameByID(userID):
 
 def getMessages(roomID, userID = None):
     rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID}{"" if userID == None else f"AND senderID = {userID}"} ORDER BY TimeSent ASC;")
-    return rows
+    messages = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4]} for row in rows]
+    return messages
 
 def printChatRoom(roomID):
-    rows = getMessages(roomID)
-    for row in rows:
-        print(f"\n{getUsernameByID(row[1])} - {row[4]}")
-        print(f"  {row[3]}")
+    messages = getMessages(roomID)
+    for message in messages:
+        print(f"\n{getUsernameByID(message["senderID"])} - {message["timeSent"]}")
+        print(f"  {message["content"]}")
+
 
 # def getData(table_name, fields : list = "*"): # Test data retrieval
 #     if fields == "*":
@@ -79,44 +81,5 @@ def getDataByQuery(query):
         print("Failed to retrieve data:", e)
         return None
 
-# Main UI
-def main():
-    print("\n -- RENICHAT DATABASE ACCESSER - BUILD 1.0.1 -- \n")
 
-    while True:
-        print("1. Add message")
-        print("2. Add account")
-        print("3. Add chat room")
-        print("4. Retrieve chat room")
-        print("\n0. Exit")
-        print("-1. Custom Query")
-        print("-2. Custom Retrieve Query")
-        choice = input("Enter your choice: ")
-        if choice == "1":
-            senderID = int(input("Enter sender ID: "))
-            chatRoomID = int(input("Enter chat room ID: "))
-            content = input("Enter message content: ")
-            addMessage(senderID, chatRoomID, content)
-        elif choice == "2":
-            username = input("Enter username: ")
-            password = input("Enter password: ")
-            addAccount(username, password)
-        elif choice == "3":
-            name = input("Enter chat room name: ")
-            user1ID = int(input("Enter user 1 ID: "))
-            user2ID = int(input("Enter user 2 ID: "))
-            addChatRoom(name, user1ID, user2ID)
-        elif choice == "4":
-            roomID = int(input("Enter chat room ID: "))
-            printChatRoom(roomID)
-
-        elif choice == "0":
-            print("Quitting!")
-            break
-        elif choice == "-1":
-            print("Enter a valid SQL statement:")
-            custom_command = input("> ")
-            runSQL(custom_command)
-        else:
-            print("(!) Invalid choice")
-        print()
+print(getMessages(1))

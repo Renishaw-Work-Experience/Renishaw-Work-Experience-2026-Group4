@@ -7,9 +7,8 @@ request_chat_history_listener = "/listener/chat_history"
 
 #RoomID, message, senderID, receiverID, timestamp added in function
 class session:
-    def __init__(self,senderID):
-        self.senderID = senderID
-
+    def __init__(self,username,password):
+        self.senderID, self.sessionID = self.login(username,password)
     def send_message(self,data):
         try:
             send_data = data
@@ -65,6 +64,21 @@ class session:
         except Exception as e:
             print("Error retrieving chat room info:", e)
             
+
+    def login(self, username, password):
+        try:
+            login_data = {"username": username, "password": password}
+            response = requests.post(address + "/listener/login", json=login_data)
+            if response.status_code == 200:
+                data = response.json()
+                print("Login successful:", data)
+                return data.get("user_id"), data.get("session_id")
+            else:
+                print("Failed to login. Status code:", response.status_code)
+                return None, None
+        except Exception as e:
+            print("Error during login:", e)
+            return None, None
 
 def ID_from_username(username):
     data = {"username": username}

@@ -11,6 +11,9 @@ sql_statements = [
     """
         DELETE FROM ChatRooms;
     """,
+    """
+        DELETE FROM Sessions;
+    """,
     # Insert new test data into the tables
     """
         INSERT INTO Accounts (username, password) VALUES ('username1', 'password1');
@@ -39,6 +42,9 @@ sql_statements = [
     """,
     """
         INSERT INTO Messages (senderID, chatRoomID, content) VALUES (2, 2, "Test message 5");
+    """,
+    """
+        INSERT INTO Sessions (userID) VALUES (1);
     """
 ]
 

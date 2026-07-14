@@ -37,12 +37,19 @@ def addChatRoom(name, members):
            INSERT INTO ChatRooms (name, {", ".join([f"userID{members.index(x) + 1}" for x in members])}) VALUES ({name}, {str(members)[1:-1]});
     """)
 
+def addSession(userID):
+    runSQL(f"""
+        INSERT INTO Sessions (userID) VALUES ({userID});
+    """)
+
 def getUsernameByID(userID):
-    rows = getDataByQuery(f"SELECT username FROM Accounts WHERE accountID = {userID};")
-    if rows:
-        return rows[0][0]
-    else:
-        return None
+    return getData("Accounts", "username", "accountID", userID)
+    
+def getAccountIDFromUsername(username):
+    return getData("Accounts", "accountID", "username", username)
+
+def getPasswordHashFromUsername(username):
+    return getData("Accounts", "password", "username", username)
 
 def printChatRoom(roomID):
     rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID} ORDER BY TimeSent ASC;")

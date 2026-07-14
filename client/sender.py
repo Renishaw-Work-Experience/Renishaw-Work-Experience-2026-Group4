@@ -16,10 +16,10 @@ def login( username, password):
             return session(data.get("user_id"), data.get("session_id"))
         else:
             print("Failed to login. Status code:", response.status_code)
-            return None, None
+            return None
     except Exception as e:
         print("Error during login:", e)
-        return None, None
+        return None
     
 
 class session:
@@ -81,6 +81,7 @@ class session:
             response = requests.get(address + "/listener/chat_info", params={"RoomID": room_id})
             if response.status_code == 200:
                 print("Chat room info received:", response.json())
+                return response["chat_info"]
             else:
                 print("Failed to retrieve chat room info. Status code:", response.status_code)
         except Exception as e:

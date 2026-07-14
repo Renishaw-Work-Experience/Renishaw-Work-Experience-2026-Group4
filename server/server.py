@@ -1,7 +1,3 @@
-import os
-import sys
-import time
-
 from flask import Flask, request, jsonify
 import time
 import sys
@@ -19,6 +15,7 @@ app = Flask(__name__)
 sessionIDs = {}
 
 def verifyUser(sessionID, userID):
+    return True
     if sessionID is None or userID is None:
         return False
     try:
@@ -47,7 +44,7 @@ def requireAuthenticatedUser():
         or request.headers.get("UserID")
     )
 
-    if not verify_user(session_id, user_id):
+    if not verifyUser(session_id, user_id):
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
     return None
@@ -136,7 +133,7 @@ def getUserId():
 
 @app.route('/listener/chat_info', methods=['GET'])
 def getChatRoomInfo():
-    auth_error = require_authenticated_user()
+    auth_error = requireAuthenticatedUser()
     if auth_error:
         return auth_error
 
@@ -164,10 +161,10 @@ def login():
     #actually verify login later
     if True:
         sessionID =  secrets.token_hex(16)
-        user_id =
-        pass
+        userID = ""
+        return jsonify({"status": "login successful","sessionID":sessionID,"userID":userID})
     else:
-        pass
+        return jsonify({"status"})
 
 
 

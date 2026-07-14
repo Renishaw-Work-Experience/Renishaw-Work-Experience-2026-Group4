@@ -80,6 +80,3 @@ def getDataByQuery(query):
     except sqlite3.OperationalError as e:
         print("Failed to retrieve data:", e)
         return None
-
-
-print(getMessages(1))

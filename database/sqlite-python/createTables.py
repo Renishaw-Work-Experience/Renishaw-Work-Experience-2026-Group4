@@ -19,6 +19,22 @@ sql_statements = [
             FOREIGN KEY (chatRoomID) REFERENCES ChatRooms(roomID)
         );
         """,
+         """
+        CREATE TABLE IF NOT EXISTS ChatRooms (
+            roomID INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            user1ID INTEGER,
+            user2ID INTEGER,
+            user3ID INTEGER,
+            user4ID INTEGER,
+            user5ID INTEGER,
+            FOREIGN KEY (user1ID) REFERENCES Accounts(accountID),
+            FOREIGN KEY (user2ID) REFERENCES Accounts(accountID),
+            FOREIGN KEY (user3ID) REFERENCES Accounts(accountID),
+            FOREIGN KEY (user4ID) REFERENCES Accounts(accountID),
+            FOREIGN KEY (user5ID) REFERENCES Accounts(accountID)
+        );
+        """,
     """
         CREATE TABLE IF NOT EXISTS Sessions (
             sessionID TEXT PRIMARY KEY DEFAULT (hex(randomblob(16))),

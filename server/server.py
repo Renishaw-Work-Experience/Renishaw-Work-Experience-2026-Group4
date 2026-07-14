@@ -50,7 +50,7 @@ def requireAuthenticatedUser():
 
 @app.route('/listener', methods=['GET', 'POST'])
 def sendMessage():
-    auth_error = require_authenticated_user()
+    auth_error = requireAuthenticatedUser()
     if auth_error:
         return auth_error
     if request.method == 'POST':

@@ -8,3 +8,4 @@ def add_member(room_id, user_id):
 
 def chat_room_info(room_id):
     pass
+

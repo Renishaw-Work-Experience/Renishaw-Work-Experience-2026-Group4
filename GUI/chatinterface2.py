@@ -3,6 +3,7 @@ from PIL import Image
 import os
 from pathlib import Path
 import sys 
+import subprocess
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -86,10 +87,10 @@ def start_app():
     chatnameframe = customtkinter.CTkFrame(app, corner_radius=10, fg_color="dodger blue")
     chatnameframe.place(relx=0.27, rely=0.03, relwidth= 0.71, relheight=0.10, anchor="nw")
     def createChatRoom():
-        import createnewchatwindow
+        process = subprocess.Popen([sys.executable, os.path.join(script_dir, "createnewchatwindow.py")])
     
     def showChatInfo():
-        import createnewchatwindow # TODO: THIS TO CHAT INFO WINDOW
+        process = subprocess.Popen([sys.executable, os.path.join(script_dir, "createnewchatwindow.py")]) # TODO: CHANGE FILENAME
 
     
 

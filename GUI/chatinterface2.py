@@ -146,7 +146,7 @@ def start_app():
             print("No session set - cannot send message")
             return
         try:
-            session.send_message(message,currentRoomID)
+            session.sendMessage(message,currentRoomID)
         except Exception as e:
             print("Failed to send message:", e)
 

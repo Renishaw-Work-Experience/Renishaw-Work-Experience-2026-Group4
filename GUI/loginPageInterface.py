@@ -2,6 +2,15 @@ import tkinter as tk
 from tkinter import ttk
 from ttkbootstrap import Style
 import customtkinter as ctk
+import sys
+from pathlib import Path
+import chatinterface2
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+
+from client import sender
 
 main = tk.Tk()
 
@@ -11,24 +20,6 @@ main.geometry("500x500")
 main.configure(bg="#f5f7fb")
 
 chatroomName = "testRoom"
-
-isLoggingIn = True
-loginPageTitleText = "Log In"
-loginBtnText = "Log In"
-
-def toggleLogIn():
-    global isLoggingIn, loginPageTitleText, loginBtnText
-    isLoggingIn = not isLoggingIn
-
-    if isLoggingIn:
-        loginPageTitleText = "Log In"
-        loginBtnText = "Log In"
-    else:
-        loginPageTitleText = "Sign Up"
-        loginBtnText = "Sign Up"
-
-    loginPageTitle.configure(text=loginPageTitleText)
-    userLoginOrSignUpBTn.configure(text=loginBtnText)
 
 
 def resize_fonts(event):
@@ -53,7 +44,7 @@ loginPageTitleBox = ttk.Frame(main, style="loginPageTitleBox.TFrame")
 loginPageTitleBox.place(relx=0.25, rely=0.0, relwidth=0.5, relheight=0.2, anchor="w")
 
 style.configure("loginPageTitle.TLabel", background=pageBackgroundColor, foreground="#1f2937")
-loginPageTitle = ttk.Label(main, text=loginPageTitleText, style="loginPageTitle.TLabel")
+loginPageTitle = ttk.Label(main, text="Login Page", style="loginPageTitle.TLabel")
 loginPageTitle.place(relx=0.5, rely=0.0, anchor="n")
 
 inputFieldxPos = 0.6
@@ -65,83 +56,43 @@ style.configure("usernameInputLabel.TLabel", background=pageBackgroundColor, for
 usernameInputLabel = ttk.Label(main, text="Username", style="usernameInputLabel.TLabel")
 usernameInputLabel.place(relx=0.4, rely=0.2, anchor="n")
 
-usernameInputField = ctk.CTkEntry(
-    main,
-    border_width=1,
-    corner_radius=15,
-    bg_color=pageBackgroundColor,
-    fg_color=inputFieldColor,
-    text_color="#111827"
-)
-usernameInputField.place(
-    relx=inputFieldxPos,
-    rely=0.2,
-    relwidth=inputFieldWidth,
-    relheight=inputFieldHeight,
-    anchor="nw"
-)
+usernameInputField = ctk.CTkEntry(main, border_width=1, corner_radius=15, bg_color=pageBackgroundColor, fg_color=inputFieldColor, text_color="#111827")
+usernameInputField.place(relx=inputFieldxPos, rely=0.2, relwidth=inputFieldWidth, relheight=inputFieldHeight, anchor="nw")
 
 style.configure("userPasswordInputLabel.TLabel", background=pageBackgroundColor, foreground="#374151")
 userPasswordInputLabel = ttk.Label(main, text="Password", style="userPasswordInputLabel.TLabel")
 userPasswordInputLabel.place(relx=0.4, rely=0.4, anchor="n")
 
-userPasswordInputField = ctk.CTkEntry(
-    main,
-    border_width=1,
-    corner_radius=15,
-    bg_color=pageBackgroundColor,
-    fg_color=inputFieldColor,
-    text_color="#111827"
-)
-userPasswordInputField.place(
-    relx=inputFieldxPos,
-    rely=0.4,
-    relwidth=inputFieldWidth,
-    relheight=inputFieldHeight,
-    anchor="nw"
-)
-
-userLoginOrSignUpBTn = ctk.CTkButton(
-    main,
-    text=loginBtnText,
-    command=toggleLogIn,
-    fg_color="#4f46e5",
-    hover_color="#4388ca",
-    text_color="white"
-)
-userLoginOrSignUpBTn.place(relx=0.4, rely=0.7, anchor="n")
+userPasswordInputField = ctk.CTkEntry(main, border_width=1, corner_radius=15, bg_color=pageBackgroundColor, fg_color=inputFieldColor, text_color="#111827")
+userPasswordInputField.place(relx=inputFieldxPos, rely=0.4, relwidth=inputFieldWidth, relheight=inputFieldHeight, anchor="nw")
 
 
 def userSubmitData():
     username = usernameInputField.get()
     password = userPasswordInputField.get()
+    session = sender.login(username,password)
+    #session = True #test
+    if session == None:
+        return
+        #do something when login fails
+    else:
+        # pass session to chat UI, close login, then start chat UI
+        try:
+            chatinterface2.set_session(session)
+        except Exception:
+            pass
+        try:
+            main.destroy()
+        except Exception:
+            pass
+        chatinterface2.start_app()
+
+
     print(f"Username: {username}")
     print(f"Password: {password}")
 
 
-
-userSubmitDataBtn = ctk.CTkButton(
-    main,
-    text="Submit",
-    command=userSubmitData,
-    fg_color="#4f46e5",
-    hover_color="#4338ca",
-    text_color="white"
-)
-userSubmitDataBtn.place(relx=0.4, rely=0.6, anchor="n")
+userSubmitDataBtn = ctk.CTkButton(main, text="Submit", command=userSubmitData, fg_color="#4f46e5", hover_color="#4338ca", text_color="white")
+userSubmitDataBtn.place(relx=0.1, rely=0.6, anchor="n")
 
 main.mainloop()
-
-i = 0
-while i < 10:
-    if isLoggingIn:
-        loginPageTitleText = "Log In"
-        loginBtnText = "Log In"
-        i += 1
-    else:
-        i += 1
-        loginPageTitleText = "Sign Up"
-        loginBtnText = "Sign Up"
-
-    
-

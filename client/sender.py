@@ -41,7 +41,7 @@ class session:
     def __init__(self,senderID,sessionID):
         self.senderID, self.sessionID = senderID,sessionID
 
-    def send_message(self,data,roomID):
+    def sendMessage(self,data,roomID):
         try:
             send_data = {"message":data}
             send_data["timestamp"] = time.time()
@@ -55,7 +55,7 @@ class session:
         except Exception as e:
             print("Error sending data:", e)
 
-    def request_chat_history(self, room_id):
+    def requestChatHistory(self, room_id):
         try:
             response = requests.get(address + request_chat_history_listener, params={"RoomID": room_id})
             if response.status_code == 200:
@@ -70,7 +70,7 @@ class session:
         except Exception as e:
             print("Error retrieving chat history:", e)
 
-    def invite_to_chat(self, room_id, user_id):
+    def inviteToChat(self, room_id, user_id):
         try:
             invite_data = {"RoomID": room_id, "UserID": user_id}
             response = requests.post(address + "/listener/chat_invite", json=invite_data)
@@ -81,9 +81,9 @@ class session:
         except Exception as e:
             print("Error inviting user:", e)
 
-    def create_chat_room(self, name, members):
+    def createChatRoom(self, name, members):
         try:
-            create_data = {"name": name, "members": members, "sender": self.senderID}
+            create_data = {"name": name, "members": members, "sender": self.senderID,"sessionID": self.sessionID}
             response = requests.post(address + "/listener/chat_create", json=create_data)
             if response.status_code == 200:
                 print("Chat room created successfully:", response.json())
@@ -92,7 +92,7 @@ class session:
         except Exception as e:
             print("Error creating chat room:", e)
 
-    def get_chat_room_info(self, room_id):
+    def getChatRoomInfo(self, room_id):
         try:
             response = requests.get(address + "/listener/chat_info", params={"RoomID": room_id})
             if response.status_code == 200:
@@ -102,7 +102,15 @@ class session:
                 print("Failed to retrieve chat room info. Status code:", response.status_code)
         except Exception as e:
             print("Error retrieving chat room info:", e)
-            
+
+    def getRoomsFromUserID(self):
+        request = {"timestamp":time.time(),"userID":self.userID,"sessionID":self.sessionID}
+        response = requests.get(address+'/listener/roomMembership',json=request)
+        if response.status_code == 200:
+            print("getting chat rooms successful")
+        else:
+            print("getting chat rooms unsuccessful")
+
 
    
 

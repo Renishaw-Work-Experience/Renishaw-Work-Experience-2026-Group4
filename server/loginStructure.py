@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-import SQLite_Functions as SQLF
+from database import database as SQLF
 
 accountIDLogged = None
 chatRoomIDLogged = None

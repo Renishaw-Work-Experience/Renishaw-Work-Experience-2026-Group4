@@ -1,11 +1,8 @@
-import os
-import sys
-import time
-
 from flask import Flask, request, jsonify
 import time
 import sys
 from pathlib import Path
+import secrets
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -15,10 +12,18 @@ from database import database
 
 app = Flask(__name__)
 
+sessionIDs = {}
+
 def verifyUser(sessionID, userID):
+    return True
     if sessionID is None or userID is None:
         return False
-    return True
+    try:
+        if sessionIDs[sessionID] == userID:
+            return True
+    except KeyError:
+        return False
+    return False
 
 
 def requireAuthenticatedUser():
@@ -44,16 +49,22 @@ def requireAuthenticatedUser():
 
     return None
 
-@app.route('/listener', methods=['GET', 'POST'])
+def requirePermission(userID, roomID, accessType="w"):
+    pass
+
+
+@app.route('/listener', methods=['POST'])
 def sendMessage():
     auth_error = requireAuthenticatedUser()
     if auth_error:
         return auth_error
-    if request.method == 'POST':
-        data = request.get_json()
-        # Process incoming data
-        return jsonify({"status": "received", "data": data}), 200
-    
+
+    data = request.get_json()
+    data_dict = data.to_dict()
+    database.addMessage(data_dict["senderID"],data_dict["roomID"],data_dict["message"])
+    # Process incoming data
+    return jsonify({"status": "received", "data": data}), 200
+
     return jsonify({"status": "listening"}), 200
 
 @app.route('/listener/chat_history', methods=['GET'])
@@ -151,8 +162,19 @@ def getChatRoomInfo():
 @app.route('/listener/login', methods=['POST'])
 def login():
     data = request.args 
+    password = data.get("password")
+    username = data.get("username")
+    #actually verify login later
+    if True:
+        sessionID =  secrets.token_hex(16)
+        userID = ""
+        return jsonify({"status": "login successful","sessionID":sessionID,"userID":userID})
+    else:
+        return jsonify({"status"})
+
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)   
+
 

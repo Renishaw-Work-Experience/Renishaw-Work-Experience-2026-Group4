@@ -19,9 +19,11 @@ def set_session(s):
     global session
     session = s
     
-   messagelist = [{"timestamp":2375758535, "message":"hellothisisatestmessagetodisplay", "senderid":234}, {"timestamp":34587345983, "message":"another mdfgiuherfuivhbevuyebvuyfbviubyifuvbfdiubveiuvbdfivubeiuvbeiuvbdfiuvbfdiuvbsiuvbfdiuvberiuvbreiuvbreiubvfsiuvbsdfiuvbdfiuvbfdiuvbdfiuvbfdeviubdfessage", "senderid":233345345348954},{"timestamp":34587345983, "message":"another message", "senderid":234353454338954},{"timestamp":34587345983, "message":"another message", "senderid":23334534348954},{"timestamp":34587345983, "message":"another message", "senderid":2335464538954},{"timestamp":34587345983, "message":"another message", "senderid":233895546454},{"timestamp":3458732343245983, "message":"another message", "senderid":345345},{"timestamp":43534534, "message":"another message", "senderid":345345},{"timestamp":34587345983, "message":"another message", "senderid":34543}]
+messagelist = [{"timestamp":2375758535, "message":"hellothisisatestmessagetodisplay", "senderid":234}, {"timestamp":34587345983, "message":"another mdfgiuherfuivhbevuyebvuyfbviubyifuvbfdiubveiuvbdfivubeiuvbeiuvbdfiuvbfdiuvbsiuvbfdiuvberiuvbreiuvbreiubvfsiuvbsdfiuvbdfiuvbfdiuvbdfiuvbfdeviubdfessage", "senderid":233345345348954},{"timestamp":34587345983, "message":"another message", "senderid":234353454338954},{"timestamp":34587345983, "message":"another message", "senderid":23334534348954},{"timestamp":34587345983, "message":"another message", "senderid":2335464538954},{"timestamp":34587345983, "message":"another message", "senderid":233895546454},{"timestamp":3458732343245983, "message":"another message", "senderid":345345},{"timestamp":43534534, "message":"another message", "senderid":345345},{"timestamp":34587345983, "message":"another message", "senderid":34543}]
+chatcontent = None
 
 def loadchats(messages):
+    return 
     for widget in chatcontent.winfo_children():
         widget.destroy()
     for message in messages:

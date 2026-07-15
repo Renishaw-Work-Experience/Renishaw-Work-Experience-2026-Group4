@@ -181,10 +181,21 @@ def login():
 
 @app.route('/listener/signup', methods=['POST'])
 def signup():
-    data = request.args 
+    data = request.get_json(silent=True) or request.form.to_dict() or request.args.to_dict()
     password = data.get("password")
     username = data.get("username")
-    loginStructure.createAccount(username, password)
+
+    if not username or not password:
+        print("Missing username or password in signup request", data)
+        return jsonify({"status": "error", "message": "Missing username or password"}), 400
+
+    try:
+        loginStructure.createAccount(username, password)
+    except Exception as exc:
+        print("Error creating account", exc)
+        return jsonify({"status": "error", "message": "Failed to create account"}), 400
+
+    return jsonify({"status": "success", "message": "Account created successfully"}), 201
 
 @app.route('/listener/roomMembership', methods=['GET'])
 def getRoomsFromUserID():

@@ -1,16 +1,12 @@
 import sqlite3
 import os
 
-# Copy this into any folder that will use the functions from this file.
-
-import sqlite3
-import os
-
 # Folder where python_file.py lives
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Build the path to the database
-db_path = os.path.join("database", "sqlite-python", "my.db")
+# Build the path to the database relative to this module
+# This ensures the DB is opened correctly regardless of current working directory.
+db_path = os.path.join(script_dir, "sqlite-python", "my.db")
 
 # Convert to absolute path
 db_path = os.path.abspath(db_path)
@@ -30,9 +26,9 @@ def addMessage(senderID, chatRoomID, content):
         INSERT INTO Messages (senderID, chatRoomID, content) VALUES ({senderID}, {chatRoomID}, "{content}");
     """)
 
-def addAccount(username, password):
+def addAccount(username, password, salt):
     runSQL(f"""
-        INSERT INTO Accounts (username, password) VALUES ("{username}", "{password}");
+        INSERT INTO Accounts (username, password, salt) VALUES ("{username}", "{password}", "{salt}");
     """)
 
 def addChatRoom(roomID, name, members):
@@ -57,7 +53,6 @@ def getAccountIDFromUsername(username):
 def getPasswordHashFromUsername(username):
     return getData("Accounts", "password", "username", username)
 
-def 
 
 def printChatRoom(roomID):
     rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID} ORDER BY TimeSent ASC;")

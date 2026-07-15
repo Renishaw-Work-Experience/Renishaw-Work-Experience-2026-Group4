@@ -53,7 +53,6 @@ def getAccountIDFromUsername(username):
 def getPasswordHashFromUsername(username):
     return getData("Accounts", "password", "username", username)
 
-
 def printChatRoom(roomID):
     rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID} ORDER BY TimeSent ASC;")
     for row in rows:
@@ -95,7 +94,12 @@ def getData(table, outputField, queryField, data): # returns data from another f
     except sqlite3.OperationalError as e:
         print("Failed to retrieve data:", e)
         return None
-
+    
+    
+def getMessages(roomID, userID = None):
+    rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID}{"" if userID == None else f"AND senderID = {userID}"} ORDER BY TimeSent ASC;")
+    messages = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4]} for row in rows]
+    return messages
 
 
 
@@ -180,7 +184,6 @@ def getDataByQuery(query):
         print("Failed to retrieve data:", e)
         return None
 '''
-
 def get_chatroom_users(db_path, roomID):
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()

@@ -21,7 +21,7 @@ def set_session(s):
     session = s
     
 
-
+chatRoomButtons = []
 
 
 def start_app():
@@ -33,6 +33,7 @@ def start_app():
 
     def loadchats(messages, room, label):
         chatname = room["name"]
+        notificationChatroom(room["roomID"], False)
         label.configure(text=chatname)
         for widget in chatcontent.winfo_children():
             widget.destroy()
@@ -65,8 +66,27 @@ def start_app():
             roomID = room["roomID"]
             print(f"Room name: {roomname}, Room ID: {roomID}")
             chatbutton = customtkinter.CTkButton(listofchatsframe, text=roomname, fg_color="blue", height=30, width=200, command=lambda room=room:loadchats(getChatHistory(room["roomID"]), room, label))
+            chatbutton.room = room
             chatbutton.pack(pady=5)
+            global chatRoomButtons
+            chatRoomButtons.append(chatbutton)
+            print(chatRoomButtons)
+
+    def findChatButton(chatRoomID):
+        global chatRoomButtons
+        for button in chatRoomButtons:
+            if button.room["roomID"] == chatRoomID:
+                return button
             
+    def notificationChatroom(chatRoomID, hasNotification : bool):
+        if hasNotification:
+            button = findChatButton(chatRoomID)
+            button.configure(fg_color="red")
+        else:
+            button = findChatButton(chatRoomID)
+            button.configure(fg_color="blue")
+
+    
 
 
     chatroomsframe = customtkinter.CTkFrame(app, corner_radius=20, fg_color="dodger blue")
@@ -155,7 +175,9 @@ def start_app():
     sendbtn.place(relx=0.89, rely=0.84, relwidth=0.07, relheight=0.11)
 
     convertRoomsToButtons(1, chatnamelabel)
-
+    print(chatRoomButtons)
+    notificationChatroom(1, True)
+    
     app.mainloop()
 
     

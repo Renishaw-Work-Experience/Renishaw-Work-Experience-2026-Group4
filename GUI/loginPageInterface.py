@@ -113,23 +113,20 @@ def userSubmitData():
             return None
 
     session = sender.login(username,password)
-    #session = True #test
-    if session == None:
+    if session is None:
         return
-        #do something when login fails
-    else:
-        # pass session to chat UI, close login, then start chat UI
-        try:
-            updateSuccessOverlay()
-            main.after(3000, on_close)
-            chatinterface2.set_session(session)
-        except Exception:
-            pass
+    try:
+        global logginSuccessful
+        logginSuccessful = True
+        chatinterface2.set_session(session)
+        updateSuccessOverlay()
+        main.after(3000, main.quit)
+    except Exception as exc:
+        print("Error starting chat UI:", exc)
         try:
             main.destroy()
         except Exception:
             pass
-        chatinterface2.start_app()
 
 
 
@@ -179,7 +176,6 @@ def updateSuccessOverlay():
                 foreground="#065f46"
             )
             successLabel.place(relx=0.5, rely=0.5, anchor="center")
-            main.after(3000, on_close)
 
         successFrame.place(relx=0.0, rely=0.0, relwidth=1.0, relheight=1.0, anchor="nw")
         successFrame.lift()
@@ -198,8 +194,6 @@ def updateSuccessOverlay():
 #checkIfValidSubmission()
 updateSuccessOverlay()
 main.mainloop()
-
-# userSubmitDataBtn = ctk.CTkButton(main, text="Submit", command=userSubmitData, fg_color="#4f46e5", hover_color="#4338ca", text_color="white")
-# userSubmitDataBtn.place(relx=0.1, rely=0.6, anchor="n")
-
-main.mainloop()
+main.destroy()
+if logginSuccessful:
+    chatinterface2.start_app()

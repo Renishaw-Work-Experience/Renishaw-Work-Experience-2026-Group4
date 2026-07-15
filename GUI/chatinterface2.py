@@ -32,7 +32,9 @@ def start_app():
     app.title("Chat messaging service")
 
     def loadchats(messages, room, label):
+        nonlocal currentRoomID
         chatname = room["name"]
+        currentRoomID = room["roomID"]
         notificationChatroom(room["roomID"], False)
         label.configure(text=chatname)
         for widget in chatcontent.winfo_children():
@@ -165,8 +167,11 @@ def start_app():
         if session is None:
             print("No session set - cannot send message")
             return
+        if not message:
+            print("No message to send")
+            return
         try:
-            session.sendMessage(message,currentRoomID)
+            session.sendMessage(message, currentRoomID)
         except Exception as e:
             print("Failed to send message:", e)
 

@@ -9,17 +9,16 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
 from database import database
+import SQLite_Functions as SQLF
+import loginStructure
 
 app = Flask(__name__)
 
-sessionIDs = {}
-
 def verifyUser(sessionID, userID):
-    return True
     if sessionID is None or userID is None:
         return False
     try:
-        if sessionIDs[sessionID] == userID:
+        if SQLF.getSessionID(userID) == sessionID:
             return True
     except KeyError:
         return False
@@ -161,16 +160,34 @@ def getChatRoomInfo():
 
 @app.route('/listener/login', methods=['POST'])
 def login():
+    data = request.get_json(silent=True) or request.form.to_dict() or request.args.to_dict()
+    username = data.get("username")
+    password = data.get("password")
+
+    print(f"Login attempt for username: {username}, password: {password}")
+
+    if not username or not password:
+        return jsonify({"status": "error", "message": "Missing username or password"}), 400
+
+    try:
+        validated = loginStructure.login(username, password)
+    except Exception as exc:
+        print("Error validating user", exc)
+        validated = False
+
+    if validated:
+        sessionID = secrets.token_hex(16)
+        userID = SQLF.getAccountIDFromUsername(username)
+        return jsonify({"status": "login successful", "sessionID": sessionID, "userID": userID}), 200
+
+    return jsonify({"status": "error", "message": "Invalid username or password"}), 401
+
+@app.route('/listener/signup', methods=['POST'])
+def signup():
     data = request.args 
     password = data.get("password")
     username = data.get("username")
-    #actually verify login later
-    if True:
-        sessionID =  secrets.token_hex(16)
-        userID = ""
-        return jsonify({"status": "login successful","sessionID":sessionID,"userID":userID})
-    else:
-        return jsonify({"status"})
+    loginStructure.createAccount(username, password)
 
 
 

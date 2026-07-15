@@ -1,0 +1,54 @@
+import sys
+from pathlib import Path
+import bcrypt
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+
+import SQLite_Functions as SQLF
+
+accountIDLogged = None
+chatRoomIDLogged = None
+
+def createAccount(username, password):
+        try:     
+            bytes = password.encode('utf-8')
+            salt = bcrypt.gensalt()
+            hash = bcrypt.hashpw(bytes, salt)
+            SQLF.addAccount(username, hash)
+            print("Account created successfully.")
+        except:
+             print("Error creating account")
+    
+def login(username, userPassword):
+        if username is None or userPassword is None:
+            return False
+
+        hash_value = SQLF.getPasswordHashFromUsername(username)
+        if hash_value is None:
+            print("Username not found.")
+            return False
+
+        if isinstance(hash_value, str):
+            if hash_value.startswith("b'") or hash_value.startswith('b"'):
+                import ast
+                try:
+                    hash_value = ast.literal_eval(hash_value)
+                except (ValueError, SyntaxError):
+                    hash_value = hash_value.encode('utf-8')
+            else:
+                hash_value = hash_value.encode('utf-8')
+
+        try:
+            userBytes = userPassword.encode('utf-8')
+            result = bcrypt.checkpw(userBytes, hash_value)
+        except Exception as exc:
+            print("Error checking password:", exc)
+            return False
+
+        if result:
+              SQLF.addSession(SQLF.getAccountIDFromUsername(username))
+              return True
+        print("Incorrect password.")
+        return False

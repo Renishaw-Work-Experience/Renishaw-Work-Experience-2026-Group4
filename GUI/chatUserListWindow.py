@@ -1,8 +1,8 @@
 import ttkbootstrap as ttk
 import tkinter as tk
 
-style = ttk.Style("flatly")
 main = tk.Tk()
+style = ttk.Style("flatly")
 main.title("Chat User List")
 main.geometry("400x320")
 
@@ -17,18 +17,18 @@ main.bind("<Configure>", resizeFonts)
 
 userLists = ["User1", "User2", "User3", "User4", "User5", "User6", "User7", "User8", "User9", "User10"]
 
-style.configure("windowTitleLabel.TLabel", background="#f5f7fb", foreground="#1f2937", font=("Arial", 12))
+style.configure("windowTitleLabel.TLabel", background="#ffffff", foreground="#000000", font=("Arial", 15))
 windowTitleLabel = ttk.Label(main, text="Chat User List", style="windowTitleLabel.TLabel")
 windowTitleLabel.pack(pady=(10, 8))
 
-style.configure("userListFrame.TFrame", background="#000000")
-style.configure("userListUser.TLabel", background="#000000", foreground="#ffffff", font=("Arial", 12))
+style.configure("userListFrame.TFrame", background="#FFFFFF")
+style.configure("userListUser.TLabel", background="#FFFFFF", foreground="#000000", font=("Arial", 12))
 
 scroll_container = ttk.Frame(main)
 scroll_container.pack(fill="both", expand=True, padx=10, pady=(0, 10))
 
 canvas = tk.Canvas(scroll_container, highlightthickness=0, background="#f5f7fb")
-canvas.pack(side="left", fill="both", relwidth=1, relheight=1)
+canvas.pack(side="left", fill="both")
 
 scrollbar = ttk.Scrollbar(scroll_container, orient="vertical", command=canvas.yview)
 scrollbar.pack(side="right", fill="y")

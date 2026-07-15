@@ -68,6 +68,8 @@ def start_app():
     messageinputbox = customtkinter.CTkTextbox(app, fg_color="grey60", corner_radius=20)
     messageinputbox.place(relx=0.27, rely=0.82, relwidth=0.6, relheight=0.15)
 
+    currentRoomID = ""
+
     def sendMessage():
         message = messageinputbox.get("0.0", "end").strip()
         global session
@@ -75,7 +77,7 @@ def start_app():
             print("No session set - cannot send message")
             return
         try:
-            session.send_message(message)
+            session.send_message(message,currentRoomID)
         except Exception as e:
             print("Failed to send message:", e)
 

@@ -20,7 +20,8 @@ def set_session(s):
     global session
     session = s
     
-
+def getSession():
+    return session
 
 
 
@@ -42,13 +43,15 @@ def start_app():
             messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{useridformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
             messagedisplay.pack(padx=5, pady=5, anchor="w")
 
-    def getChatRooms(userID): # Collect the chat rooms from the server
+    def getChatRooms(): # Collect the chat rooms from the server
         chatroomlist = [{"roomID":1, "name":"testname", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None},{"roomID":2, "name":"ADifferentTestName", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None}]
+        chatroomlist = session.getRoomsFromUserID()
         return chatroomlist
         # PLACEHOLDER!!!
 
     def getChatHistory(roomID): # Collect the chat history from the server
         print("Getting history for room", roomID)
+        """
         if roomID == 1:
             messagelist = [{"timestamp":2375758535, "message":"hellothisisatestmessagetodisplay", "senderid":234}, {"timestamp":34587345983, "message":"another mdfgiuherfuivhbevuyebvuyfbviubyifuvbfdiubveiuvbdfivubeiuvbeiuvbdfiuvbfdiuvbsiuvbfdiuvberiuvbreiuvbreiubvfsiuvbsdfiuvbdfiuvbfdiuvbdfiuvbfdeviubdfessage", "senderid":233345345348954},{"timestamp":34587345983, "message":"another message", "senderid":234353454338954},{"timestamp":34587345983, "message":"another message", "senderid":23334534348954},{"timestamp":34587345983, "message":"another message", "senderid":2335464538954},{"timestamp":34587345983, "message":"another message", "senderid":233895546454},{"timestamp":3458732343245983, "message":"another message", "senderid":345345},{"timestamp":43534534, "message":"another message", "senderid":345345},{"timestamp":34587345983, "message":"another message", "senderid":34543}]
         elif roomID == 2:
@@ -56,10 +59,14 @@ def start_app():
         else:
             messagelist = [{"timestamp":2375758535, "message":"No messages in this chat room", "senderid":0}]
         # ^ This is placeholder for now. We will request from the server
-        return messagelist
+        """
+        
+        return session.requestChatHistory(roomID)
 
     def convertRoomsToButtons(userID, label):
-        chatrooms = getChatRooms(userID)
+        chatrooms = getChatRooms()
+        if not chatrooms:
+            return
         for room in chatrooms:
             roomname = room["name"]
             roomID = room["roomID"]

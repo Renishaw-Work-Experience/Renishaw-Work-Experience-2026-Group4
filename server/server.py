@@ -25,8 +25,7 @@ def verifyUser(sessionID, userID):
     return False
 
 
-def requireAuthenticatedUser():
-    data = request.get_json(silent=True) or {}
+def requireAuthenticatedUser(data):
     if not data and request.args:
         data = request.args.to_dict()
 
@@ -54,7 +53,8 @@ def requirePermission(userID, roomID, accessType="w"):
 
 @app.route('/listener', methods=['POST'])
 def sendMessage():
-    auth_error = requireAuthenticatedUser() 
+    data = request.get_json()
+    auth_error = requireAuthenticatedUser(data) 
     if auth_error:
         return auth_error
 
@@ -67,7 +67,7 @@ def sendMessage():
 
 @app.route('/listener/chat_history', methods=['GET'])
 def requestChatHistory():
-    auth_error = requireAuthenticatedUser()
+    auth_error = requireAuthenticatedUser(request.get_json())
     if auth_error:
         return auth_error
 
@@ -80,7 +80,7 @@ def requestChatHistory():
 
 @app.route('/listener/chat_create', methods=['POST'])
 def createChatRoomRequest():
-    auth_error = requireAuthenticatedUser()
+    auth_error = requireAuthenticatedUser(request.get_json())
     if auth_error:
         return auth_error
 
@@ -117,7 +117,7 @@ def inviteToChat():
 
 @app.route('/listener/get_user_id', methods=['POST'])
 def getUserId():
-    auth_error = requireAuthenticatedUser()
+    auth_error = requireAuthenticatedUser(request.get_json())
     if auth_error:
         return auth_error
 
@@ -134,7 +134,7 @@ def getUserId():
 
 @app.route('/listener/chat_info', methods=['GET'])
 def getChatRoomInfo():
-    auth_error = requireAuthenticatedUser()
+    auth_error = requireAuthenticatedUser(request.get_json())
     if auth_error:
         return auth_error
 
@@ -202,8 +202,15 @@ def getRoomsFromUserID():
     auth_error = requireAuthenticatedUser()
     if auth_error:
         return auth_error
-    return jsonify({"rooms":[]})
+    return jsonify({"rooms":database.getRoomsFromUserID(data["userID"])})
     
+@app.route("/listener/get_username",methods=['GET'])
+def getUsernameFromID():
+    data = request.args
+    auth_error = requireAuthenticatedUser()
+    if auth_error:
+        return auth_error
+    return jsonify(database.getUsernameByID(data["userID"]))
 
 
 if __name__ == '__main__':

@@ -40,6 +40,7 @@ def signup( username, password):
 class session:
     def __init__(self,senderID,sessionID):
         self.senderID, self.sessionID = senderID,sessionID
+        
 
     def sendMessage(self,data,roomID):
         try:
@@ -47,6 +48,7 @@ class session:
             send_data["timestamp"] = time.time()
             send_data["senderID"] = self.senderID
             send_data["roomID"] = roomID
+            send_data["sessionID"] = self.sessionID
             response = requests.post(address + send_listener, json=send_data)
             if response.status_code == 200:
                 print("Data sent successfully:", response.json())
@@ -72,7 +74,7 @@ class session:
 
     def inviteToChat(self, room_id, user_id):
         try:
-            invite_data = {"RoomID": room_id, "UserID": user_id}
+            invite_data = {"RoomID": room_id, "UserID": user_id, "senderID":self.senderID}
             response = requests.post(address + "/listener/chat_invite", json=invite_data)
             if response.status_code == 200:
                 print("User invited successfully:", response.json())
@@ -83,7 +85,7 @@ class session:
 
     def createChatRoom(self, name, members):
         try:
-            create_data = {"name": name, "members": members, "sender": self.senderID,"sessionID": self.sessionID}
+            create_data = {"name": name, "members": members, "senderID": self.senderID,"sessionID": self.sessionID}
             response = requests.post(address + "/listener/chat_create", json=create_data)
             if response.status_code == 200:
                 print("Chat room created successfully:", response.json())
@@ -104,7 +106,7 @@ class session:
             print("Error retrieving chat room info:", e)
 
     def getRoomsFromUserID(self):
-        request = {"timestamp":time.time(),"userID":self.userID,"sessionID":self.sessionID}
+        request = {"timestamp":time.time(),"userID":self.senderID,"sessionID":self.sessionID}
         response = requests.get(address+'/listener/roomMembership',json=request)
         if response.status_code == 200:
             print("getting chat rooms successful")
@@ -116,7 +118,7 @@ class session:
 
 def ID_from_username(username):
     data = {"username": username}
-    response = requests.post(address + "/listener/get_user_id", json=data)
+    response = requests.get(address + "/listener/get_user_id", json=data)
     if response.status_code == 200:
         return response.json().get("user_id")
     elif response.status_code == 404:
@@ -126,6 +128,20 @@ def ID_from_username(username):
     else:
         print("Failed to retrieve user ID. Status code:", response.status_code)
         return None
+
+def usernameFromID(ID):
+    data = {"userID":ID}
+    response = requests.get(address + "/listener/get_username", json=data)
+    if response.status_code == 200:
+        return response.json().get("username")
+    elif response.status_code == 404:
+        print("User not found.")
+        print("Failed to retrieve username. Status code:", response.status_code)
+        return None
+    else:
+        print("Failed to retrieve username. Status code:", response.status_code)
+        return None
+
 
 
 if __name__ == "__main__":

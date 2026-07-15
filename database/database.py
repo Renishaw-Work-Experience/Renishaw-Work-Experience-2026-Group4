@@ -101,6 +101,23 @@ def getMessages(roomID, userID = None):
     messages = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4]} for row in rows]
     return messages
 
+def getRoomsFromUserID(userID):
+    # Query all chat rooms where the userID matches any of the 5 member slots
+    query = f"""
+        SELECT * FROM ChatRooms 
+        WHERE userID1 = {userID} 
+           OR userID2 = {userID} 
+           OR userID3 = {userID} 
+           OR userID4 = {userID} 
+           OR userID5 = {userID};
+    """
+
+    rows = getDataByQuery(query)
+    if rows:
+        rows = [i[0] for i in rows]
+    
+    # Return the list of matched rooms (or an empty list if none are found)
+    return rows if rows else []
 
 
 '''

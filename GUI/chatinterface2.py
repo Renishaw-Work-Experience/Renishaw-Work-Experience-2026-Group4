@@ -5,9 +5,12 @@ import os
 # ensure image paths work regardless of current working directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-messagelist = [{"timestamp":2375758535, "message":"hellothisisatestmessagetodisplay", "senderid":234}, {"timestamp":34587345983, "message":"another mdfgiuherfuivhbevuyebvuyfbviubyifuvbfdiubveiuvbdfivubeiuvbeiuvbdfiuvbfdiuvbsiuvbfdiuvberiuvbreiuvbreiubvfsiuvbsdfiuvbdfiuvbfdiuvbdfiuvbfdeviubdfessage", "senderid":233345345348954},{"timestamp":34587345983, "message":"another message", "senderid":234353454338954},{"timestamp":34587345983, "message":"another message", "senderid":23334534348954},{"timestamp":34587345983, "message":"another message", "senderid":2335464538954},{"timestamp":34587345983, "message":"another message", "senderid":233895546454},{"timestamp":3458732343245983, "message":"another message", "senderid":345345},{"timestamp":43534534, "message":"another message", "senderid":345345},{"timestamp":34587345983, "message":"another message", "senderid":34543}]
+# messagelist = [{"timestamp":2375758535, "message":"hellothisisatestmessagetodisplay", "senderid":234}, {"timestamp":34587345983, "message":"another mdfgiuherfuivhbevuyebvuyfbviubyifuvbfdiubveiuvbdfivubeiuvbeiuvbdfiuvbfdiuvbsiuvbfdiuvberiuvbreiuvbreiubvfsiuvbsdfiuvbdfiuvbfdiuvbdfiuvbfdeviubdfessage", "senderid":233345345348954},{"timestamp":34587345983, "message":"another message", "senderid":234353454338954},{"timestamp":34587345983, "message":"another message", "senderid":23334534348954},{"timestamp":34587345983, "message":"another message", "senderid":2335464538954},{"timestamp":34587345983, "message":"another message", "senderid":233895546454},{"timestamp":3458732343245983, "message":"another message", "senderid":345345},{"timestamp":43534534, "message":"another message", "senderid":345345},{"timestamp":34587345983, "message":"another message", "senderid":34543}]
 
-def loadchats(messages):
+
+def loadchats(messages, room, label):
+    chatname = room["name"]
+    label.configure(text=chatname)
     for widget in chatcontent.winfo_children():
         widget.destroy()
     for message in messages:
@@ -16,11 +19,35 @@ def loadchats(messages):
         messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{useridformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
         messagedisplay.pack(padx=5, pady=5, anchor="w")
 
+def getChatRooms(userID): # Collect the chat rooms from the server
+    chatroomlist = [{"roomID":1, "name":"testname", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None},{"roomID":2, "name":"ADifferentTestName", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None}]
+    return chatroomlist
+    # PLACEHOLDER!!!
+
+def getChatHistory(roomID): # Collect the chat history from the server
+    print("Getting history for room", roomID)
+    if roomID == 1:
+        messagelist = [{"timestamp":2375758535, "message":"hellothisisatestmessagetodisplay", "senderid":234}, {"timestamp":34587345983, "message":"another mdfgiuherfuivhbevuyebvuyfbviubyifuvbfdiubveiuvbdfivubeiuvbeiuvbdfiuvbfdiuvbsiuvbfdiuvberiuvbreiuvbreiubvfsiuvbsdfiuvbdfiuvbfdiuvbdfiuvbfdeviubdfessage", "senderid":233345345348954},{"timestamp":34587345983, "message":"another message", "senderid":234353454338954},{"timestamp":34587345983, "message":"another message", "senderid":23334534348954},{"timestamp":34587345983, "message":"another message", "senderid":2335464538954},{"timestamp":34587345983, "message":"another message", "senderid":233895546454},{"timestamp":3458732343245983, "message":"another message", "senderid":345345},{"timestamp":43534534, "message":"another message", "senderid":345345},{"timestamp":34587345983, "message":"another message", "senderid":34543}]
+    elif roomID == 2:
+        messagelist = [{"timestamp":2375758535, "message":"A different message", "senderid":111}, {"timestamp":34587345983, "message":"bonjour", "senderid":222},{"timestamp":34587345983, "message":"WAHOOOO", "senderid":384}]
+    else:
+        messagelist = [{"timestamp":2375758535, "message":"No messages in this chat room", "senderid":0}]
+    # ^ This is placeholder for now. We will request from the server
+    return messagelist
+
+def convertRoomsToButtons(userID, label):
+    chatrooms = getChatRooms(userID)
+    for room in chatrooms:
+        roomname = room["name"]
+        roomID = room["roomID"]
+        print(f"Room name: {roomname}, Room ID: {roomID}")
+        chatbutton = customtkinter.CTkButton(listofchatsframe, text=roomname, fg_color="blue", height=30, width=200, command=lambda room=room:loadchats(getChatHistory(room["roomID"]), room, label))
+        chatbutton.pack(pady=5)
+        
+
 app = customtkinter.CTk()
 app.geometry("1000x600")
 app.title("Chat messaging service")
-
-chatname = "testname"
 
 chatroomsframe = customtkinter.CTkFrame(app, corner_radius=20, fg_color="dodger blue")
 chatroomsframe.place(relx=0.0,rely=0.0, relwidth=0.25, relheight=0.15, anchor="nw")
@@ -43,7 +70,7 @@ newchatlabel = customtkinter.CTkButton(chatroomsframe, image=newchatimage, text=
 newchatlabel.place(relx=0.6,rely=0.22, relwidth=0.3, relheight=0.6)
 
 chatnamefont = customtkinter.CTkFont(size=25)
-chatnamelabel = customtkinter.CTkLabel(chatnameframe, text=chatname, font=chatnamefont)
+chatnamelabel = customtkinter.CTkLabel(chatnameframe, text="Open Chat...", font=chatnamefont)
 chatnamelabel.place(relx=0.03,rely=0.25)
 
 chatcontent = customtkinter.CTkScrollableFrame(app, fg_color="grey87")
@@ -56,7 +83,6 @@ sendimage = customtkinter.CTkImage(light_image=Image.open(os.path.join(script_di
 sendbtn = customtkinter.CTkButton(app, image=sendimage, text="", fg_color="deep sky blue", corner_radius=50)
 sendbtn.place(relx=0.89, rely=0.84, relwidth=0.07, relheight=0.11)
 
-testchat = customtkinter.CTkButton(listofchatsframe, text=chatname, fg_color="blue", height=30, width=200, command=lambda:loadchats(messagelist))
-testchat.pack()
+convertRoomsToButtons(1, chatnamelabel)
 
 app.mainloop()

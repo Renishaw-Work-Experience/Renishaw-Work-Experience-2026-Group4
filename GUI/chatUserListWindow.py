@@ -1,55 +1,74 @@
-import ttkbootstrap as ttk
-import tkinter as tk
+import customtkinter as ctk
 
-main = tk.Tk()
-style = ttk.Style("flatly")
-main.title("Chat User List")
-main.geometry("400x320")
+ctk.set_appearance_mode("light")  
+ctk.set_default_color_theme("blue") 
 
+dynList = [
+    "Alice Smith",
+    "Bob Jones",
+    "Charlie Brown",
+    "Diana Prince",
+    "Evan Wright",
+    "Fiona Gallagher"
+]
 
-def resizeFonts(event):
-    if event.widget == main:
-        windowTitleFontSize = max(10, int(event.width * 0.022))
-        windowTitleLabel.config(font=("Arial", windowTitleFontSize))
+def openUserInfo(userName):
+    """Target function executed when a name button is clicked."""
+    print(self=None) # allow only One
+    print(f"Opening profile window for: {userName}")
 
+class ContentCard(ctk.CTkFrame):
+    """A light-themed card component where the name acts as a clickable button."""
+    def __init__(self, master, name_string, click_callback):
+        super().__init__(master, fg_color="#F2F2F2", corner_radius=8, border_width=1, border_color="#D1D1D1")
+        
+        self.avatar_lbl = ctk.CTkLabel(
+            self, 
+            text="👤", 
+            font=("Arial", 18),
+            fg_color="#E0E0E0", 
+            text_color="#333333",
+            width=35,
+            height=35,
+            corner_radius=6
+        )
+        self.avatar_lbl.pack(side="left", padx=(15, 5), pady=10)
+        
+        self.name_btn = ctk.CTkButton(
+            self, 
+            text=name_string, 
+            font=("Arial", 14, "bold"),
+            text_color="#1A1A1A",
+            fg_color="transparent",
+            hover_color="#E0E0E0",
+            anchor="w",
+            command=click_callback
+        )
+        self.name_btn.pack(side="left", fill="x", expand=True, padx=(0, 10))
 
-main.bind("<Configure>", resizeFonts)
+class App(ctk.CTk):
+    def __init__(self, data_source):
+        super().__init__()
+        self.title("Dynamic Name Directory")
+        self.geometry("400x450")
 
-userLists = ["User1", "User2", "User3", "User4", "User5", "User6", "User7", "User8", "User9", "User10"]
+        # scrollbar
+        self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.scroll_frame.pack(fill="both", expand=True, padx=15, pady=15)
 
-style.configure("windowTitleLabel.TLabel", background="#ffffff", foreground="#000000", font=("Arial", 15))
-windowTitleLabel = ttk.Label(main, text="Chat User List", style="windowTitleLabel.TLabel")
-windowTitleLabel.pack(pady=(10, 8))
+        #show list
+        self.render_cards(data_source)
 
-style.configure("userListFrame.TFrame", background="#FFFFFF")
-style.configure("userListUser.TLabel", background="#FFFFFF", foreground="#000000", font=("Arial", 12))
+    def render_cards(self, name_list):
+        for name in name_list:
+            # asign name arg
+            card = ContentCard(
+                self.scroll_frame, 
+                name_string=name,
+                click_callback=lambda target_name=name: openUserInfo(target_name)
+            )
+            card.pack(fill="x", pady=5, padx=5)
 
-scroll_container = ttk.Frame(main)
-scroll_container.pack(fill="both", expand=True, padx=10, pady=(0, 10))
-
-canvas = tk.Canvas(scroll_container, highlightthickness=0, background="#f5f7fb")
-canvas.pack(side="left", fill="both")
-
-scrollbar = ttk.Scrollbar(scroll_container, orient="vertical", command=canvas.yview)
-scrollbar.pack(side="right", fill="y")
-canvas.configure(yscrollcommand=scrollbar.set)
-
-content_frame = ttk.Frame(canvas)
-canvas.create_window((0, 0), window=content_frame, anchor="nw")
-
-
-def on_frame_configure(event):
-    canvas.configure(scrollregion=canvas.bbox("all"))
-
-
-content_frame.bind("<Configure>", on_frame_configure)
-
-for user in userLists:
-    userListFrame = ttk.Frame(content_frame, style="userListFrame.TFrame")
-    userListFrame.pack(fill="x", pady=4)
-
-    userListUser = ttk.Label(userListFrame, text=user, style="userListUser.TLabel")
-    userListUser.pack(pady=6)
-
-
-main.mainloop()
+if __name__ == "__main__":
+    app = App(data_source=dynList)
+    app.mainloop()

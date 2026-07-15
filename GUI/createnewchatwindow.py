@@ -1,11 +1,27 @@
 import customtkinter
 from PIL import Image
 import os
+import sys
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
+groupchatusernameentries = []
+
 def addnewperson():
-    customtkinter.CTkEntry(personlistframe, placeholder_text="Enter persons username", height=50, width=400, fg_color="white").pack(pady=5)
+    entry = customtkinter.CTkEntry(personlistframe, placeholder_text="Enter persons username", height=50, width=400, fg_color="white")
+    entry.pack(pady=5)
+    groupchatusernameentries.append(entry)
+
+def createnewchat():
+    for username in groupchatusernameentries:
+        print(username.get())
+
+    chatname = chatnameentry.get()
+    print(chatname)
+    
+    # Insert code here to pass in chat name and usernames to create the new chat 
+
+    sys.exit()
 
 app = customtkinter.CTk()
 app.geometry("600x400")
@@ -16,15 +32,17 @@ title = customtkinter.CTkLabel(app, text="Create a new chat", font=titlefont)
 title.place(relx=0.1, rely=0.05)
 
 personlistframe = customtkinter.CTkScrollableFrame(app, fg_color="grey55")
-personlistframe.place(relx=0.1,rely=0.2,relwidth=0.6,relheight=0.5)
+personlistframe.place(relx=0.1,rely=0.3,relwidth=0.6,relheight=0.4)
+
+chatnameentry = customtkinter.CTkEntry(app, fg_color="grey90", placeholder_text="Enter chat title")
+chatnameentry.place(relx=0.1,rely=0.18, relwidth=0.4, relheight=0.1)
 
 addpersonbutton = customtkinter.CTkButton(app, text="Add another person", command=addnewperson)
-addpersonbutton.place(relx=0.7,rely=0.2,relwidth=0.25,relheight=0.1)
+addpersonbutton.place(relx=0.7,rely=0.3,relwidth=0.25,relheight=0.1)
 
-person1 = customtkinter.CTkEntry(personlistframe, placeholder_text="Enter persons username", height=50, width=400, fg_color="white")
-person1.pack(pady=5)
+addnewperson()
 
-createchat = customtkinter.CTkButton(app, text="Create new chat")
+createchat = customtkinter.CTkButton(app, text="Create new chat", command=createnewchat)
 createchat.place(relwidth=0.4, relheight=0.1, relx=0.3, rely=0.8)
 
 app.mainloop()

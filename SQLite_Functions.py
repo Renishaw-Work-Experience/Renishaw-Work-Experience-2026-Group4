@@ -32,7 +32,7 @@ def addAccount(username, password):
         INSERT INTO Accounts (username, password) VALUES ("{username}", "{password}");
     """)
 
-def addChatRoom(name, members):
+def addChatRoom(roomID, name, members):
     runSQL(f"""
            INSERT INTO ChatRooms (name, {", ".join([f"userID{members.index(x) + 1}" for x in members])}) VALUES ({name}, {str(members)[1:-1]});
     """)

@@ -50,12 +50,12 @@ def requireAuthenticatedUser():
     return None
 
 def requirePermission(userID, roomID, accessType="w"):
-    pass
+    return True
 
 
 @app.route('/listener', methods=['POST'])
 def sendMessage():
-    auth_error = requireAuthenticatedUser()
+    auth_error = requireAuthenticatedUser() 
     if auth_error:
         return auth_error
 
@@ -63,9 +63,8 @@ def sendMessage():
     data_dict = data.to_dict()
     database.addMessage(data_dict["senderID"],data_dict["roomID"],data_dict["message"])
     # Process incoming data
-    return jsonify({"status": "received", "data": data}), 200
+    return jsonify({"status": "received", "timestamp": data["timestamp"]}), 200
 
-    return jsonify({"status": "listening"}), 200
 
 @app.route('/listener/chat_history', methods=['GET'])
 def requestChatHistory():
@@ -112,10 +111,8 @@ def inviteToChat():
     try:
         roomID = data["roomID"]
         userID = data["userID"]
-        response = call_database("add_member", roomID, userID)
-        if response is None:
-            return jsonify({"status": "error", "message": "Failed to invite user to chat room"}), 500
-
+        database.addUserToChatRoom(roomID, userID)
+       
     except KeyError:
         return jsonify({"status": "error", "message": "Missing data in request data"}), 400
     return jsonify({"status": "user invited", "data": data}), 200
@@ -131,7 +128,7 @@ def getUserId():
     try:
         username = data["username"]
         
-        userID = "user_" + username
+        userID = data.getIDByUsername(username)
         return jsonify({"status": "user found", "userID": userID}), 200
 
     except KeyError:
@@ -172,6 +169,14 @@ def login():
     else:
         return jsonify({"status"})
 
+@app.route('/listener/roomMembership', methods=['GET'])
+def getRoomsFromUserID():
+    data = request.args
+    auth_error = requireAuthenticatedUser()
+    if auth_error:
+        return auth_error
+    return jsonify({"rooms":[]})
+    
 
 
 if __name__ == '__main__':

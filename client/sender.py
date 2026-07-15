@@ -26,11 +26,12 @@ class session:
     def __init__(self,senderID,sessionID):
         self.senderID, self.sessionID = senderID,sessionID
 
-    def send_message(self,data):
+    def send_message(self,data,roomID):
         try:
-            send_data = data
+            send_data = {"message":data}
             send_data["timestamp"] = time.time()
             send_data["senderID"] = self.senderID
+            send_data["roomID"] = roomID
             response = requests.post(address + send_listener, json=send_data)
             if response.status_code == 200:
                 print("Data sent successfully:", response.json())

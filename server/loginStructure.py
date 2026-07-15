@@ -12,14 +12,14 @@ accountIDLogged = None
 chatRoomIDLogged = None
 
 def createAccount(username, password):
-        try:     
-            bytes = password.encode('utf-8')
+        try:
+            password_bytes = password.encode('utf-8')
             salt = bcrypt.gensalt()
-            hash = bcrypt.hashpw(bytes, salt)
-            SQLF.addAccount(username, hash)
+            hashed_password = bcrypt.hashpw(password_bytes, salt)
+            SQLF.addAccount(username, hashed_password.decode('utf-8'), salt.decode('utf-8'))
             print("Account created successfully.")
-        except:
-             print("Error creating account")
+        except Exception as exc:
+            print("Error creating account", exc)
     
 def login(username, userPassword):
         if username is None or userPassword is None:

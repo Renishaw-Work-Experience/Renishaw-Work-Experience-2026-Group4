@@ -25,7 +25,7 @@ def signup( username, password):
     try:
         signup_data = {"username": username, "password": password}
         response = requests.post(address + "/listener/signup", json=signup_data)
-        if response.status_code == 200:
+        if response.status_code in [200, 201]:
             data = response.json()
             print("Signup successful:", data)
             return None

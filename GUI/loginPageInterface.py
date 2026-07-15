@@ -101,12 +101,36 @@ def userSubmitData():
     global logginSuccessful, username
     username = usernameInputField.get()
     password = userPasswordInputField.get()
-    if username.strip() and password.strip():
-        print(f"Username: {username}")
-        print(f"Password: {password}")
-        logginSuccessful = True
-        updateSuccessOverlay()
-        main.after(3000, on_close)
+    print(f"Username: {username}")
+    print(f"Password: {password}")
+
+    if not isLoggingIn:
+        try:
+            sender.signup(username, password)
+            return toggleLogIn()
+        except Exception:
+            print("Error signing up user")
+            return None
+
+    session = sender.login(username,password)
+    #session = True #test
+    if session == None:
+        return
+        #do something when login fails
+    else:
+        # pass session to chat UI, close login, then start chat UI
+        try:
+            updateSuccessOverlay()
+            main.after(3000, on_close)
+            chatinterface2.set_session(session)
+        except Exception:
+            pass
+        try:
+            main.destroy()
+        except Exception:
+            pass
+        chatinterface2.start_app()
+
 
 
 userSubmitDataBtn = ctk.CTkButton(
@@ -117,9 +141,18 @@ userSubmitDataBtn = ctk.CTkButton(
     hover_color="#4338ca",
     text_color="white"
 )
+userLoginOrSignUpBTn = ctk.CTkButton(
+    main,
+    text=loginBtnText,
+    command=toggleLogIn,
+    fg_color="#4f46e5",
+    hover_color="#4338ca",
+    text_color="white"
+)
 
 #incorrectUserSubmission = ttk.Label(main, background=pageBackgroundColor, foreground="#FF0000")
 userSubmitDataBtn.place(relx=0.4, rely=0.6, anchor="n")
+userLoginOrSignUpBTn.place(relx=0.4, rely=0.7, anchor="n")
 
 logginSuccessful = False
 successFrame = None
@@ -165,29 +198,8 @@ def updateSuccessOverlay():
 #checkIfValidSubmission()
 updateSuccessOverlay()
 main.mainloop()
-    session = sender.login(username,password)
-    #session = True #test
-    if session == None:
-        return
-        #do something when login fails
-    else:
-        # pass session to chat UI, close login, then start chat UI
-        try:
-            chatinterface2.set_session(session)
-        except Exception:
-            pass
-        try:
-            main.destroy()
-        except Exception:
-            pass
-        chatinterface2.start_app()
 
-
-    print(f"Username: {username}")
-    print(f"Password: {password}")
-
-
-userSubmitDataBtn = ctk.CTkButton(main, text="Submit", command=userSubmitData, fg_color="#4f46e5", hover_color="#4338ca", text_color="white")
-userSubmitDataBtn.place(relx=0.1, rely=0.6, anchor="n")
+# userSubmitDataBtn = ctk.CTkButton(main, text="Submit", command=userSubmitData, fg_color="#4f46e5", hover_color="#4338ca", text_color="white")
+# userSubmitDataBtn.place(relx=0.1, rely=0.6, anchor="n")
 
 main.mainloop()

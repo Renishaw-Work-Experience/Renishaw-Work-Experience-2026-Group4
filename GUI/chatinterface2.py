@@ -85,6 +85,15 @@ def start_app():
 
     chatnameframe = customtkinter.CTkFrame(app, corner_radius=10, fg_color="dodger blue")
     chatnameframe.place(relx=0.27, rely=0.03, relwidth= 0.71, relheight=0.10, anchor="nw")
+    def createChatRoom():
+        import createnewchatwindow
+    
+    def showChatInfo():
+        import createnewchatwindow # TODO: THIS TO CHAT INFO WINDOW
+
+    
+
+    
 
     app.grid_columnconfigure(0,weight=1)
     app.grid_rowconfigure(0,weight=1)
@@ -100,8 +109,17 @@ def start_app():
     except Exception:
         new_chat_img = None
 
+    try:
+        info_img = Image.open(os.path.join(script_dir, "info.png"))
+    except Exception:
+        info_img = None
+
+    infoimage = customtkinter.CTkImage(light_image=info_img, size=(40, 40)) if info_img else None
+    chatinfobtn = customtkinter.CTkButton(chatnameframe, image=infoimage, text="", fg_color="blue", command=lambda:showChatInfo(), width=50, height=50)
+    chatinfobtn.place(relx=0.9, rely=0.09)
+
     newchatimage = customtkinter.CTkImage(light_image=new_chat_img, size=(50,50)) if new_chat_img else None
-    newchatlabel = customtkinter.CTkButton(chatroomsframe, image=newchatimage, text="", corner_radius=50, fg_color="deep sky blue")
+    newchatlabel = customtkinter.CTkButton(chatroomsframe, image=newchatimage, text="", corner_radius=50, fg_color="deep sky blue", command=lambda:createChatRoom())
     newchatlabel.place(relx=0.6,rely=0.22, relwidth=0.3, relheight=0.5)
 
     chatnamefont = customtkinter.CTkFont(size=25)

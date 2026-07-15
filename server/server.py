@@ -37,14 +37,14 @@ def requireAuthenticatedUser():
         or request.headers.get("sessionID")
         or request.headers.get("SessionID")
     )
-    user_id = (
+    userID = (
         data.get("userID")
-        or data.get("user_id")
+        or data.get("userID")
         or request.headers.get("userID")
         or request.headers.get("UserID")
     )
 
-    if not verifyUser(session_id, user_id):
+    if not verifyUser(session_id, userID):
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
     return None
@@ -78,7 +78,7 @@ def requestChatHistory():
     roomID = data_dict["roomID"]
     messages = database.getMessages(roomID)
 
-    return jsonify({"status": "chat history requested", "room_id": roomID,
+    return jsonify({"status": "chat history requested", "roomID": roomID,
                      "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
 
 @app.route('/listener/chat_create', methods=['POST'])
@@ -110,9 +110,9 @@ def inviteToChat():
     data = request.get_json()
     data_dict = data.to_dict()
     try:
-        room_id = data["roomID"]
-        user_id = data["UserID"]
-        response =None # database.addUserToRoom(room_id, user_id)
+        roomID = data["roomID"]
+        userID = data["userID"]
+        response = call_database("add_member", roomID, userID)
         if response is None:
             return jsonify({"status": "error", "message": "Failed to invite user to chat room"}), 500
 
@@ -131,8 +131,8 @@ def getUserId():
     try:
         username = data["username"]
         
-        user_id = "user_" + username
-        return jsonify({"status": "user found", "user_id": user_id}), 200
+        userID = "user_" + username
+        return jsonify({"status": "user found", "userID": userID}), 200
 
     except KeyError:
         return jsonify({"status": "error", "message": "Missing username in request data"}), 400
@@ -146,10 +146,10 @@ def getChatRoomInfo():
     data = request.args
     data_dict = data.to_dict()
     try:
-        room_id = data_dict["roomID"]
+        roomID = data_dict["roomID"]
         
         chat_info = {
-            "room_id": room_id,
+            "roomID": roomID,
             "name": "Sample Chat Room",
             "members": ["user1", "user2", "user3"],
             "created_at": time.time()

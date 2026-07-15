@@ -18,6 +18,17 @@ session = None
 def set_session(s):
     global session
     session = s
+    
+   messagelist = [{"timestamp":2375758535, "message":"hellothisisatestmessagetodisplay", "senderid":234}, {"timestamp":34587345983, "message":"another mdfgiuherfuivhbevuyebvuyfbviubyifuvbfdiubveiuvbdfivubeiuvbeiuvbdfiuvbfdiuvbsiuvbfdiuvberiuvbreiuvbreiubvfsiuvbsdfiuvbdfiuvbfdiuvbdfiuvbfdeviubdfessage", "senderid":233345345348954},{"timestamp":34587345983, "message":"another message", "senderid":234353454338954},{"timestamp":34587345983, "message":"another message", "senderid":23334534348954},{"timestamp":34587345983, "message":"another message", "senderid":2335464538954},{"timestamp":34587345983, "message":"another message", "senderid":233895546454},{"timestamp":3458732343245983, "message":"another message", "senderid":345345},{"timestamp":43534534, "message":"another message", "senderid":345345},{"timestamp":34587345983, "message":"another message", "senderid":34543}]
+
+def loadchats(messages):
+    for widget in chatcontent.winfo_children():
+        widget.destroy()
+    for message in messages:
+        x = message["message"]
+        useridformessage = message["senderid"]
+        messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{useridformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
+        messagedisplay.pack(padx=5, pady=5, anchor="w")
 
 def start_app():
     """Create and run the chat UI. Call this after successful login."""
@@ -69,6 +80,7 @@ def start_app():
     messageinputbox.place(relx=0.27, rely=0.82, relwidth=0.6, relheight=0.15)
 
     currentRoomID = ""
+
 
     def sendMessage():
         message = messageinputbox.get("0.0", "end").strip()

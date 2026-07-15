@@ -13,7 +13,10 @@ def login( username, password):
         if response.status_code == 200:
             data = response.json()
             print("Login successful:", data)
-            return session(data.get("user_id"), data.get("session_id"))
+            return session(
+                data.get("userID") or data.get("user_id"),
+                data.get("sessionID") or data.get("session_id")
+            )
         else:
             print("Failed to login. Status code:", response.status_code)
             return None
@@ -39,7 +42,9 @@ def signup( username, password):
 
 class session:
     def __init__(self,senderID,sessionID):
-        self.senderID, self.sessionID = senderID,sessionID
+        self.senderID = senderID
+        self.userID = senderID
+        self.sessionID = sessionID
 
     def sendMessage(self,data,roomID):
         try:
@@ -47,6 +52,7 @@ class session:
             send_data["timestamp"] = time.time()
             send_data["senderID"] = self.senderID
             send_data["roomID"] = roomID
+            send_data["sessionID"] = self.sessionID
             response = requests.post(address + send_listener, json=send_data)
             if response.status_code == 200:
                 print("Data sent successfully:", response.json())

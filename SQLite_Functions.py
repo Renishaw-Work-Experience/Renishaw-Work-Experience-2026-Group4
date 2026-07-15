@@ -6,11 +6,9 @@ import os
 # Folder where python_file.py lives
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Build the path to the database
-db_path = os.path.join("database", "sqlite-python", "my.db")
-
-# Convert to absolute path
-db_path = os.path.abspath(db_path)
+# Build the path to the database relative to this file
+# This ensures the DB can be opened even when the current working directory differs.
+db_path = os.path.join(script_dir, "database", "sqlite-python", "my.db")
 
 def runSQL(statement):
     try:
@@ -41,6 +39,9 @@ def addSession(userID):
     runSQL(f"""
         INSERT INTO Sessions (userID) VALUES ({userID});
     """)
+
+def getSessionID(userID):
+    return getData("Sessions", "sessionID", "userID", userID)
 
 def getUsernameByID(userID):
     return getData("Accounts", "username", "accountID", userID)

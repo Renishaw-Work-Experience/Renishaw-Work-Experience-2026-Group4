@@ -16,14 +16,14 @@ sql_statements = [
     """,
     # Insert new test data into the tables
     """
-        INSERT INTO Accounts (username, password) VALUES ('username1', 'password1');
+        INSERT INTO Accounts (username, password, salt) VALUES ('username1', 'password1', 'salt1');
     """
         ,
     """
-        INSERT INTO Accounts (username, password) VALUES ('username2', 'password2');
+        INSERT INTO Accounts (username, password, salt) VALUES ('username2', 'password2', 'salt2');
     """,
     """
-        INSERT INTO Accounts (username, password) VALUES ('username3', 'password3');
+        INSERT INTO Accounts (username, password, salt) VALUES ('username3', 'password3', 'salt3');
     """,
     """
         INSERT INTO ChatRooms (name, user1ID, user2ID) VALUES ('Test chat room', 1, 2);

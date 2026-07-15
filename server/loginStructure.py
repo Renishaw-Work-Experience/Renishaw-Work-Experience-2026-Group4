@@ -22,10 +22,33 @@ def createAccount(username, password):
              print("Error creating account")
     
 def login(username, userPassword):
-        hash = SQLF.getPasswordHashFromUsername()
-        userBytes = userPassword.encode('utf-8')
-        result = bcrypt.checkpw(userBytes, hash)
+        if username is None or userPassword is None:
+            return False
+
+        hash_value = SQLF.getPasswordHashFromUsername(username)
+        if hash_value is None:
+            print("Username not found.")
+            return False
+
+        if isinstance(hash_value, str):
+            if hash_value.startswith("b'") or hash_value.startswith('b"'):
+                import ast
+                try:
+                    hash_value = ast.literal_eval(hash_value)
+                except (ValueError, SyntaxError):
+                    hash_value = hash_value.encode('utf-8')
+            else:
+                hash_value = hash_value.encode('utf-8')
+
+        try:
+            userBytes = userPassword.encode('utf-8')
+            result = bcrypt.checkpw(userBytes, hash_value)
+        except Exception as exc:
+            print("Error checking password:", exc)
+            return False
+
         if result:
               SQLF.addSession(SQLF.getAccountIDFromUsername(username))
-        else:
-            print("Incorrect password.")
+              return True
+        print("Incorrect password.")
+        return False

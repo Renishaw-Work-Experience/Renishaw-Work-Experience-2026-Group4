@@ -5,7 +5,8 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Build the path to the database
-db_path = os.path.join("database", "sqlite-python", "my.db")
+# db_path = os.path.join("database", "sqlite-python", "my.db")
+db_path = "my.db"
 
 # Convert to absolute path
 db_path = os.path.abspath(db_path)
@@ -20,9 +21,9 @@ except sqlite3.OperationalError as e:
 sql_statements = [
     """CREATE TABLE IF NOT EXISTS Accounts (
             accountID INTEGER PRIMARY KEY, 
-            username text NOT NULL, 
-            password text NOT NULL,
-            salt text NOT NULL
+            username TEXT NOT NULL, 
+            password TEXT NOT NULL,
+            salt TEXT NOT NULL
         );
         """,
     """
@@ -47,16 +48,16 @@ sql_statements = [
         CREATE TABLE IF NOT EXISTS ChatRooms (
             roomID INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
-            userID1 INTEGER NOT NULL,
-            userID2 INTEGER NOT NULL,
-            userID3 INTEGER,
-            userID4 INTEGER,
-            userID5 INTEGER,
-            FOREIGN KEY (userID1) REFERENCES Accounts(accountID),
-            FOREIGN KEY (userID2) REFERENCES Accounts(accountID),
-            FOREIGN KEY (userID3) REFERENCES Accounts(accountID),
-            FOREIGN KEY (userID4) REFERENCES Accounts(accountID),
-            FOREIGN KEY (userID5) REFERENCES Accounts(accountID)
+            user1ID INTEGER,
+            user2ID INTEGER,
+            user3ID INTEGER,
+            user4ID INTEGER,
+            user5ID INTEGER,
+            FOREIGN KEY (user1ID) REFERENCES Accounts(accountID),
+            FOREIGN KEY (user2ID) REFERENCES Accounts(accountID),
+            FOREIGN KEY (user3ID) REFERENCES Accounts(accountID),
+            FOREIGN KEY (user4ID) REFERENCES Accounts(accountID),
+            FOREIGN KEY (user5ID) REFERENCES Accounts(accountID)
         );
         """
 ]

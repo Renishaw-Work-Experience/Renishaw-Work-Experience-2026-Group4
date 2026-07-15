@@ -21,6 +21,21 @@ def login( username, password):
         print("Error during login:", e)
         return None
     
+def signup( username, password):
+    try:
+        signup_data = {"username": username, "password": password}
+        response = requests.post(address + "/listener/signup", json=signup_data)
+        if response.status_code == 200:
+            data = response.json()
+            print("Signup successful:", data)
+            return None
+        else:
+            print("Failed to signup. Status code:", response.status_code)
+            return None
+    except Exception as e:
+        print("Error during signup:", e)
+        return None
+
 
 class session:
     def __init__(self,senderID,sessionID):

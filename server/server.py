@@ -76,8 +76,7 @@ def requestChatHistory():
     roomID = data_dict["roomID"]
     messages = database.getMessages(roomID)
 
-    return jsonify({"status": "chat history requested", "roomID": roomID,
-                     "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
+    return jsonify({"status": "chat history requested", "roomID": roomID, "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
 
 @app.route('/listener/chat_create', methods=['POST'])
 def createChatRoomRequest():

@@ -130,11 +130,11 @@ def ID_from_username(username):
 
 if __name__ == "__main__":
     session = session("user1")
-    session.send_message({"message": "Hello, server!"})
+    session.sendMessage({"message": "Hello, server!"})
 
 
-    session.create_chat_room("MyChatRoom", ["user1", "user2"])
-    session.invite_to_chat("MyChatRoom", "user3")
+    session.createChatRoom("MyChatRoom", ["user1", "user2"])
+    session.inviteToChat("MyChatRoom", "user3")
 
 
-    session.request_chat_history("MyChatRoom")
+    session.requestChatHistory("MyChatRoom")

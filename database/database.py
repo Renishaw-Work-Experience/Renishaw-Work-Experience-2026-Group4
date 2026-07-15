@@ -180,3 +180,30 @@ def getDataByQuery(query):
         print("Failed to retrieve data:", e)
         return None
 '''
+
+def get_chatroom_users(db_path, roomID):
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT userID1, userID2, userID3, userID4, userID5
+            FROM ChatRooms
+            WHERE roomID = ?
+        """, (roomID,))
+
+        room = cursor.fetchone()
+        
+        user_ids = [userid for userid in room if userid is not None]
+
+        if not user_ids:
+            return []
+
+        placeholders = ",".join("?" * len(user_ids))
+
+        cursor.execute(f"""
+            SELECT username
+            FROM Accounts
+            WHERE accountID IN ({placeholders})
+        """, user_ids)
+
+        return cursor.fetchall()

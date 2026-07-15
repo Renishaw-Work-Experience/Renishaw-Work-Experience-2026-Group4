@@ -25,9 +25,9 @@ def addMessage(senderID, chatRoomID, content):
         INSERT INTO Messages (senderID, chatRoomID, content) VALUES ({senderID}, {chatRoomID}, "{content}");
     """)
 
-def addAccount(username, password):
+def addAccount(username, password, salt):
     runSQL(f"""
-        INSERT INTO Accounts (username, password) VALUES ("{username}", "{password}");
+        INSERT INTO Accounts (username, password, salt) VALUES ("{username}", "{password}", "{salt}");
     """)
 
 def addChatRoom(roomID, name, members):

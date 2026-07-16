@@ -18,7 +18,7 @@ def verifyUser(sessionID, userID):
     if sessionID is None or userID is None:
         return False
     try:
-        if SQLF.getSessionID(userID) == sessionID:
+        if database.getUserIDFromSessionID(sessionID) == userID:
             return True
     except KeyError:
         return False
@@ -26,23 +26,15 @@ def verifyUser(sessionID, userID):
 
 
 def requireAuthenticatedUser(data):
+    
     if not data and request.args:
         data = request.args.to_dict()
 
-    session_id = (
-        data.get("sessionID")
-        or data.get("session_id")
-        or request.headers.get("sessionID")
-        or request.headers.get("SessionID")
-    )
-    userID = (
-        data.get("userID")
-        or data.get("userID")
-        or request.headers.get("userID")
-        or request.headers.get("UserID")
-    )
+    sessionID = data.get("sessionID")
+    userID = data.get("senderID")
 
-    if not verifyUser(session_id, userID):
+    
+    if not verifyUser(sessionID, userID):
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
     return None
@@ -59,8 +51,13 @@ def sendMessage():
         return auth_error
 
     data = request.get_json()
-    data_dict = data.to_dict()
-    database.addMessage(data_dict["senderID"],data_dict["roomID"],data_dict["message"])
+    data_dict = data
+    try:
+        roomID = data_dict["roomID"]
+    except:
+        roomID = 1
+
+    database.addMessage(data_dict["senderID"],roomID,data_dict["message"])
     # Process incoming data
     return jsonify({"status": "received", "timestamp": data["timestamp"]}), 200
 
@@ -85,7 +82,7 @@ def createChatRoomRequest():
         return auth_error
 
     data = request.get_json()
-    data_dict = data.to_dict()
+    data_dict = data
     try:
         name = data_dict["name"]
         members = data_dict["members"] + [data_dict["sender"]]
@@ -100,7 +97,7 @@ def createChatRoomRequest():
 
 @app.route('/listener/chat_invite', methods=['POST'])
 def inviteToChat():
-    auth_error = requireAuthenticatedUser()
+    auth_error = requireAuthenticatedUser(request.get_json())
     if auth_error:
         return auth_error
 
@@ -122,7 +119,7 @@ def getUserId():
         return auth_error
 
     data = request.get_json()
-    data_dict = data.to_dict()
+    data_dict = data
     try:
         username = data["username"]
         
@@ -174,11 +171,12 @@ def login():
     if validated:
         sessionID = secrets.token_hex(16)
         userID = SQLF.getAccountIDFromUsername(username)
+        database.addSession(userID,sessionID)
         return jsonify({"status": "login successful", "sessionID": sessionID, "userID": userID}), 200
 
     return jsonify({"status": "error", "message": "Invalid username or password"}), 401
 
-@app.route('/listener/signup', methods=['POST'])
+@app.route('/listener/signup', methods=['GET'])
 def signup():
     data = request.get_json(silent=True) or request.form.to_dict() or request.args.to_dict()
     password = data.get("password")
@@ -198,11 +196,13 @@ def signup():
 
 @app.route('/listener/roomMembership', methods=['GET'])
 def getRoomsFromUserID():
+    return jsonify({"rooms":[database.get]]}),200
     data = request.args
-    auth_error = requireAuthenticatedUser()
+    print(data)
+    auth_error = requireAuthenticatedUser(data.to_dict())
     if auth_error:
         return auth_error
-    return jsonify({"rooms":database.getRoomsFromUserID(data["userID"])})
+    return jsonify({"rooms":database.getRoomsFromUserID(data["userID"])}), 200
     
 @app.route("/listener/get_username",methods=['GET'])
 def getUsernameFromID():

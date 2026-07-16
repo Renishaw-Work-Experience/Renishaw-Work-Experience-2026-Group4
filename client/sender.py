@@ -13,7 +13,7 @@ def login( username, password):
         if response.status_code == 200:
             data = response.json()
             print("Login successful:", data)
-            return session(data.get("user_id"), data.get("session_id"))
+            return session(data.get("userID"), data.get("sessionID"))
         else:
             print("Failed to login. Status code:", response.status_code)
             return None
@@ -49,6 +49,7 @@ class session:
             send_data["senderID"] = self.senderID
             send_data["roomID"] = roomID
             send_data["sessionID"] = self.sessionID
+
             response = requests.post(address + send_listener, json=send_data)
             if response.status_code == 200:
                 print("Data sent successfully:", response.json())
@@ -59,7 +60,7 @@ class session:
 
     def requestChatHistory(self, room_id):
         try:
-            response = requests.get(address + request_chat_history_listener, params={"RoomID": room_id})
+            response = requests.get(address + request_chat_history_listener, params={"RoomID": room_id,"senderID":self.senderID,"sessionID":self.sessionID})
             if response.status_code == 200:
                 print("Chat history received:", response.json())
                 return(response["messages"])
@@ -96,22 +97,29 @@ class session:
 
     def getChatRoomInfo(self, room_id):
         try:
-            response = requests.get(address + "/listener/chat_info", params={"RoomID": room_id})
+            response = requests.get(address + "/listener/chat_info", params={"RoomID": room_id,"senderID":self.senderID,"sessionID":self.sessionID})
             if response.status_code == 200:
                 print("Chat room info received:", response.json())
-                return response["chat_info"]
+                return response.json()["chat_info"]
             else:
                 print("Failed to retrieve chat room info. Status code:", response.status_code)
         except Exception as e:
             print("Error retrieving chat room info:", e)
 
     def getRoomsFromUserID(self):
-        request = {"timestamp":time.time(),"userID":self.senderID,"sessionID":self.sessionID}
+        request = {"timestamp":time.time(),"senderID":self.senderID,"sessionID":self.sessionID}
         response = requests.get(address+'/listener/roomMembership',json=request)
+        content = response.json()
+        
         if response.status_code == 200:
             print("getting chat rooms successful")
+            print(content)
+            return content["rooms"]
         else:
             print("getting chat rooms unsuccessful")
+        print(response)
+        print(response.headers)
+        
 
 
    

@@ -44,8 +44,9 @@ def start_app():
             messagedisplay.pack(padx=5, pady=5, anchor="w")
 
     def getChatRooms(): # Collect the chat rooms from the server
-        chatroomlist = [{"roomID":1, "name":"testname", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None},{"roomID":2, "name":"ADifferentTestName", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None}]
-        chatroomlist = session.getRoomsFromUserID()
+        #chatroomlist = [{"roomID":1, "name":"testname", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None},{"roomID":2, "name":"ADifferentTestName", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None}]
+        chatroomlist = session.getRoomsFromUserID()["rooms"]
+        print(chatroomlist)
         return chatroomlist
         # PLACEHOLDER!!!
 
@@ -68,6 +69,7 @@ def start_app():
         if not chatrooms:
             return
         for room in chatrooms:
+            print("room:",room["name"])
             roomname = room["name"]
             roomID = room["roomID"]
             print(f"Room name: {roomname}, Room ID: {roomID}")
@@ -161,7 +163,9 @@ def start_app():
     sendbtn = customtkinter.CTkButton(app, image=sendimage, text="", fg_color="deep sky blue", corner_radius=50,command=sendMessage)
     sendbtn.place(relx=0.89, rely=0.84, relwidth=0.07, relheight=0.11)
 
-    convertRoomsToButtons(1, chatnamelabel)
+    convertRoomsToButtons(session.senderID, chatnamelabel)
+
+
 
     app.mainloop()
 

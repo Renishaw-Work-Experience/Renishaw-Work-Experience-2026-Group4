@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import time
 
 # Folder where python_file.py lives
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,7 +24,7 @@ def runSQL(statement):
 
 def addMessage(senderID, chatRoomID, content):
     runSQL(f"""
-        INSERT INTO Messages (senderID, chatRoomID, content) VALUES ({senderID}, {chatRoomID}, "{content}");
+        INSERT INTO Messages (senderID, chatRoomID, content,TimeSent) VALUES ({senderID}, {chatRoomID}, "{content}",{time.time()});
     """)
 
 def addAccount(username, password, salt):
@@ -36,9 +37,13 @@ def addChatRoom(roomID, name, members):
            INSERT INTO ChatRooms (name, {", ".join([f"userID{members.index(x) + 1}" for x in members])}) VALUES ({name}, {str(members)[1:-1]});
     """)
 
-def addSession(userID):
+def addSession(userID, sessionID=None, timestamp=None):
+    if sessionID is None:
+        sessionID = ""
+    if timestamp is None:
+        timestamp = ""
     runSQL(f"""
-        INSERT INTO Sessions (userID) VALUES ({userID});
+        INSERT INTO Sessions (sessionID, userID, timestamp) VALUES ("{sessionID}", {userID}, "{timestamp}");
     """)
 
 def getUsernameByID(userID):
@@ -227,3 +232,20 @@ def get_chatroom_users(db_path, roomID):
         """, user_ids)
 
         return cursor.fetchall()
+
+def getSessionID(userID):
+    return getData("Sessions", "sessionID", "userID", userID)
+
+def getUserIDFromSessionID(SessionID):
+    return getData("sessions","userID","sessionID",SessionID)
+
+
+def addSession(userID, sessionID, timestamp=None):
+    if timestamp is None:
+        timestamp = time.time()
+    runSQL(f"""
+        INSERT INTO Sessions (sessionID, userID) VALUES ("{sessionID}", {userID});
+    """)
+
+def getChatRoomInfo(RoomID):
+    pass

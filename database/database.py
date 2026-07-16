@@ -113,16 +113,19 @@ def getRoomsFromUserID(userID):
     # Query all chat rooms where the userID matches any of the 5 member slots
     query = f"""
         SELECT * FROM ChatRooms 
-        WHERE userID1 = {userID} 
-           OR userID2 = {userID} 
-           OR userID3 = {userID} 
-           OR userID4 = {userID} 
-           OR userID5 = {userID};
+        WHERE user1ID = {userID} 
+           OR user2ID = {userID} 
+           OR user3ID = {userID} 
+           OR user4ID = {userID} 
+           OR user5ID = {userID};
     """
 
+    
     rows = getDataByQuery(query)
+    
+    
     if rows:
-        rows = [i[0] for i in rows]
+        rows = [{"roomID":i[0],"name":i[1]} for i in rows]
     
     # Return the list of matched rooms (or an empty list if none are found)
     return rows if rows else []

@@ -26,7 +26,7 @@ def verifyUser(sessionID, userID):
 
 
 def requireAuthenticatedUser(data):
-    
+    return None
     if not data and request.args:
         data = request.args.to_dict()
 
@@ -72,10 +72,14 @@ def requestChatHistory():
     if auth_error:
         return auth_error
 
-    data = request.args
-    data_dict = data.to_dict()
-    roomID = data_dict["roomID"]
-    messages = database.getMessages(roomID)
+    try:
+        data = request.get_json()
+        data_dict = data
+        roomID = data_dict["roomID"]
+        messages = database.getMessages(roomID)
+    except Exception:
+        print(Exception)
+        return jsonify({"message ":"internal server error"}), 500
 
     return jsonify({"status": "chat history requested", "roomID": roomID, "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
 
@@ -213,16 +217,31 @@ def signup():
 
     return jsonify({"status": "success", "message": "Account created successfully"}), 201
 
-@app.route('/listener/roomMembership', methods=['GET'])
-def getRoomsFromUserID():
-    #return jsonify({"rooms":[database.get]]}),200
-    data = request.args
-    print(data)
-    auth_error = requireAuthenticatedUser(data.to_dict())
-    if auth_error:
-        return auth_error
-    return jsonify({"rooms":database.getRoomsFromUserID(data["userID"])}), 200
+@app.route('/listener/roomMembership', methods=['POST'])
+def room_membership():
+    # 1. Force Flask to parse the JSON, even if headers are slightly off
+
+    data = request.get_json(silent=True) 
     
+    # 2. Safety check
+    if not data:
+        return jsonify({"error": "Request body must be JSON"}), 400
+        
+    
+    sender_id = data.get("senderID")
+    if not sender_id:
+        return jsonify({"error": "Missing 'senderID' in JSON payload"}), 400
+        
+    try:
+        # 4. Fetch from database and return
+        rooms = database.getRoomsFromUserID(sender_id)
+        return jsonify({"rooms": rooms}), 200
+    except Exception as e:
+        # Log database errors so you can see them on the server console
+        print(f"Database error: {e}")
+        return jsonify({"error": "Internal database error"}), 500
+
+
 @app.route("/listener/get_username",methods=['GET'])
 def getUsernameFromID():
     data = request.args

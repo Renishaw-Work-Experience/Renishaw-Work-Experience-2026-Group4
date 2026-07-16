@@ -75,10 +75,10 @@ class session:
 
     def requestChatHistory(self, room_id):
         try:
-            response = requests.get(address + request_chat_history_listener, params={"RoomID": room_id,"senderID":self.senderID,"sessionID":self.sessionID})
+            response = requests.get(address + request_chat_history_listener, json={"roomID": room_id,"senderID":self.senderID,"sessionID":self.sessionID})
             if response.status_code == 200:
                 print("Chat history received:", response.json())
-                return(response["messages"])
+                return(response.json()["messages"])
             else:
                 #{"status": "chat history requested", "room_id": RoomID,
                 #"messages": [{"timestamp": time.time(), "message": "Sample message","senderID": "user1"}]}), 200
@@ -137,20 +137,32 @@ class session:
 
 
     def getRoomsFromUserID(self):
-        request = {"timestamp":time.time(),"senderID":self.senderID,"sessionID":self.sessionID}
-        response = requests.get(address+'/listener/roomMembership',json=request)
-        content = response.json()
+        request_data = {
+            "timestamp": time.time(),
+            "senderID": self.senderID,
+            "sessionID": self.sessionID
+        }
         
-        if response.status_code == 200:
-            print("getting chat rooms successful")
-            print(content)
-            return content["rooms"]
-        else:
-            print("getting chat rooms unsuccessful")
-        print(response)
-        print(response.headers)
-        
-
+        try:
+            # Note the 'json=' parameter (do not use 'data=')
+            response = requests.post(
+                f"{address}/listener/roomMembership", 
+                json=request_data
+            )
+            
+            if response.status_code == 200:
+                content = response.json()
+                print("Getting chat rooms successful!")
+                print("Server response data:", content)
+                return content.get("rooms", [])
+            else:
+                print(f"Getting chat rooms unsuccessful. Status: {response.status_code}")
+                print("Raw response body:", response.text)
+                return []
+                
+        except requests.exceptions.RequestException as e:
+            print(f"Connection error: {e}")
+            return []
 
    
 

@@ -48,7 +48,6 @@ def login(username, userPassword):
             return False
 
         if result:
-              #sessio adding handled in seperate file
-              return True
-        print("Incorrect password.")
+            return SQLF.addSession(SQLF.getAccountIDFromUsername(username))
         return False
+        

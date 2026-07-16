@@ -50,16 +50,18 @@ def sendMessage():
     if auth_error:
         return auth_error
 
-    data = request.get_json()
-    data_dict = data
-    try:
-        roomID = data_dict["roomID"]
-    except:
-        roomID = 1
+    data = request.get_json(silent=True) or request.form.to_dict() or request.args.to_dict()
+    if not isinstance(data, dict):
+        return jsonify({"status": "error", "message": "Invalid data format"}), 400
 
-    database.addMessage(data_dict["senderID"],roomID,data_dict["message"])
-    # Process incoming data
-    return jsonify({"status": "received", "timestamp": data["timestamp"]}), 200
+    sender_id = data.get("senderID") or data.get("sender_id")
+    room_id = data.get("roomID") or data.get("room_id")
+    message = data.get("message")
+    if sender_id is None or room_id is None or message is None:
+        return jsonify({"status": "error", "message": "Missing senderID, roomID, or message"}), 400
+
+    database.addMessage(sender_id, room_id, message)
+    return jsonify({"status": "received", "timestamp": data.get("timestamp", time.time())}), 200
 
 
 @app.route('/listener/chat_history', methods=['GET'])
@@ -163,13 +165,12 @@ def login():
         return jsonify({"status": "error", "message": "Missing username or password"}), 400
 
     try:
-        validated = loginStructure.login(username, password)
+        sessionID = loginStructure.login(username, password)
     except Exception as exc:
         print("Error validating user", exc)
-        validated = False
+        sessionID = None
 
-    if validated:
-        sessionID = secrets.token_hex(16)
+    if sessionID:
         userID = SQLF.getAccountIDFromUsername(username)
         database.addSession(userID,sessionID)
         return jsonify({"status": "login successful", "sessionID": sessionID, "userID": userID}), 200

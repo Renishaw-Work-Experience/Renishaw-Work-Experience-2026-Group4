@@ -19,7 +19,7 @@ groupchatusernameentries = []
 
 
 def addnewperson():
-    entry = customtkinter.CTkEntry(personlistframe, placeholder_text="Enter persons username", height=50, width=400, fg_color="white")
+    entry = customtkinter.CTkEntry(personlistframe, placeholder_text="Enter persons username", height=50, width=400, fg_color="white", text_color="darkblue")
     entry.pack(pady=5)
     groupchatusernameentries.append(entry)
 
@@ -27,22 +27,27 @@ def createnewchat():
     userIDs = []
     session = chatinterface.getSession()
     invalidUsernamesIdx = []
+    usernames = []
     for idx, username in enumerate(groupchatusernameentries):
         userID = sender.ID_from_username(username)
         if userID:
             userIDs.append(userID)
+            usernames.append(username)
         else:
             invalidUsernamesIdx.append(idx)
     invalidUsernamesIdx.reverse()
     for i in invalidUsernamesIdx:
         username.pop(i)
-    username.append(sender.usernameFromID(session.userID))
-
-
+    usernames.append(sender.usernameFromID(session.userID))
     userIDs.append(session.senderID)
     
 
     chatname = chatnameentry.get()
+
+
+    session.createChatRoom(chatname, userIDs)
+
+
     print(chatname)
     
 
@@ -59,7 +64,7 @@ title.place(relx=0.1, rely=0.05)
 personlistframe = customtkinter.CTkScrollableFrame(app, fg_color="grey55")
 personlistframe.place(relx=0.1,rely=0.3,relwidth=0.6,relheight=0.4)
 
-chatnameentry = customtkinter.CTkEntry(app, fg_color="grey90", placeholder_text="Enter chat title")
+chatnameentry = customtkinter.CTkEntry(app, fg_color="grey90", placeholder_text="Enter chat title", text_color="darkblue")
 chatnameentry.place(relx=0.1,rely=0.18, relwidth=0.4, relheight=0.1)
 
 addpersonbutton = customtkinter.CTkButton(app, text="Add another person", command=addnewperson)

@@ -163,7 +163,7 @@ def login():
 
     if not username or not password:
         return jsonify({"status": "error", "message": "Missing username or password"}), 400
-
+    sessionID = None
     try:
         if loginStructure.login(username, password):
             sessionID = secrets.token_hex(16)
@@ -173,7 +173,7 @@ def login():
 
     if sessionID:
         userID = SQLF.getAccountIDFromUsername(username)
-        database.addSession(userID,sessionID)
+        database.addSession(userID, sessionID)
         return jsonify({"status": "login successful", "sessionID": sessionID, "userID": userID}), 200
 
     return jsonify({"status": "error", "message": "Invalid username or password"}), 401

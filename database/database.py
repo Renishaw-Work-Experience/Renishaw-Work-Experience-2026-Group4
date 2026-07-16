@@ -37,6 +37,13 @@ def addChatRoom(roomID, name, members):
            INSERT INTO ChatRooms (name, {", ".join([f"userID{members.index(x) + 1}" for x in members])}) VALUES ({name}, {str(members)[1:-1]});
     """)
 
+def addSession(userID, sessionID=None):
+    if sessionID is None:
+        sessionID = ""
+    runSQL(f"""
+        INSERT INTO Sessions (sessionID, userID) VALUES ("{sessionID}", "{userID}");
+    """)
+
 def getUsernameByID(userID):
     return getData("Accounts", "username", "accountID", userID)
     
@@ -229,14 +236,6 @@ def getSessionID(userID):
 
 def getUserIDFromSessionID(SessionID):
     return getData("sessions","userID","sessionID",SessionID)
-
-
-def addSession(userID, sessionID, timestamp=None):
-    if timestamp is None:
-        timestamp = time.time()
-    runSQL(f"""
-        INSERT INTO Sessions (sessionID, userID) VALUES ("{sessionID}", {userID});
-    """)
 
 def getChatRoomInfo(RoomID):
     pass

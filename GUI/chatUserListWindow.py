@@ -1,7 +1,11 @@
 import customtkinter as ctk
+import json
+import sqlite3
 
 ctk.set_appearance_mode("light")  
 ctk.set_default_color_theme("blue") 
+
+currentUser = {"Alice Smith": {"userId": "Id1", "password": "password1", "rooms": ["room1", "room2"]}}
 
 userDetails = {
     "Alice Smith": {"userId": "Id1", "password": "password1", "rooms": ["room1", "room2"]},
@@ -14,6 +18,7 @@ userDetails = {
 
 dynNameList = list(userDetails.keys())
 infoWindows = []
+roomWindows = []
 
 def startChat(userName, infoWindow, parentWindow):
     print(f"Starting chat with: {userName}")
@@ -22,6 +27,13 @@ def startChat(userName, infoWindow, parentWindow):
     if parentWindow is not None:
         parentWindow.destroy()
 
+
+def openRoom(roomID, infoWindow, parentWindow):
+    print(f"Opening room: {roomID}")
+    if infoWindow is not None:
+        infoWindow.destroy()
+    if parentWindow is not None:
+        parentWindow.destroy()
 
 def openUserInfo(userName, parent):
     global infoWindows
@@ -33,8 +45,6 @@ def openUserInfo(userName, parent):
             pass
         if oldWindow in infoWindows:
             infoWindows.remove(oldWindow)
-
-    print(f"Opening profile window for: {userName}")
 
     userData = userDetails.get(userName, {"userId": "Unknown", "password": "No password set", "rooms": []})
     userId = userData.get("userId", "Unknown")
@@ -51,20 +61,15 @@ def openUserInfo(userName, parent):
             infoWindows.remove(userInfoWindow)
         userInfoWindow.destroy()
 
+
     userInfoWindow.protocol("WM_DELETE_WINDOW", onClose)
 
-    userInfoWindowTitle = ctk.CTkLabel(userInfoWindow, text=f"Profile details for {userName}", font=("Arial", 14, "bold"))
+    userInfoWindowTitle = ctk.CTkLabel(userInfoWindow, text=f"Profile details for {userName}", font=("Segoe UI", 14, "bold"))
     userInfoWindowTitle.pack(padx=20, pady=(20, 10))
 
-    userInfoWindowId = ctk.CTkLabel(userInfoWindow, text=f"User ID: {userId}", font=("Arial", 12))
+    userInfoWindowId = ctk.CTkLabel(userInfoWindow, text=f"User ID: {userId}", font=("Segoe UI", 12))
     userInfoWindowId.pack(padx=20, pady=(0, 5))
 
-    userInfoWindowPassword = ctk.CTkLabel(userInfoWindow, text=f"Password: {password}", font=("Arial", 12))
-    userInfoWindowPassword.pack(padx=20, pady=(0, 5))
-
-    roomText = ", ".join(rooms) if rooms else "None"
-    userInfoWindowRoomList = ctk.CTkLabel(userInfoWindow, text=f"Chat rooms: {roomText}", font=("Arial", 12), wraplength=300)
-    userInfoWindowRoomList.pack(padx=20, pady=(0, 10))
 
     contentFrame = ctk.CTkFrame(userInfoWindow)
     contentFrame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -72,8 +77,12 @@ def openUserInfo(userName, parent):
     userInfoWindowChatBtn = ctk.CTkButton(contentFrame, text="Start Chat", command=lambda: startChat(userName, userInfoWindow, parent))
     userInfoWindowChatBtn.pack(pady=(0, 10))
 
-    userInfoWindowRoomList = ctk.CTkLabel(contentFrame, text="Available Chat Rooms:", font=("Arial", 12))
-    userInfoWindowRoomList.pack()
+    userInfoWindowRoomLabel = ctk.CTkLabel(contentFrame, text="Available Chat Rooms:", font=("Segoe UI", 12))
+    userInfoWindowRoomLabel.pack()
+
+    for room in rooms:
+        roomButton = ctk.CTkButton(contentFrame, text=room, command=lambda roomName=room: (print(f"Opening room: {roomName}"), (openRoom(roomName, userInfoWindow, parent))))
+        roomButton.pack(pady=3)
 
 
 
@@ -87,7 +96,7 @@ class ContentCard(ctk.CTkFrame):
         self.avatar_lbl = ctk.CTkLabel(
             self, 
             text="👤", 
-            font=("Arial", 18),
+            font=("Segoe UI", 18),
             fg_color="#E0E0E0", 
             text_color="#333333",
             width=35,
@@ -99,7 +108,7 @@ class ContentCard(ctk.CTkFrame):
         self.name_btn = ctk.CTkButton(
             self, 
             text=nameString, 
-            font=("Arial", 14, "bold"),
+            font=("Segoe UI", 14, "bold"),
             text_color="#1A1A1A",
             fg_color="transparent",
             hover_color="#E0E0E0",

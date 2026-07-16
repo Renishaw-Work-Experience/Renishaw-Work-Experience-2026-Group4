@@ -25,21 +25,11 @@ def login(username, userPassword):
         if username is None or userPassword is None:
             return False
 
-        hash_value = SQLF.getPasswordHashFromUsername(username)
+        hash_value = SQLF.getPasswordHashFromUsername(username).encode('utf-8') if SQLF.getPasswordHashFromUsername(username) is not None else None
         if hash_value is None:
             print("Username not found.")
             return False
-
-        if isinstance(hash_value, str):
-            if hash_value.startswith("b'") or hash_value.startswith('b"'):
-                import ast
-                try:
-                    hash_value = ast.literal_eval(hash_value)
-                except (ValueError, SyntaxError):
-                    hash_value = hash_value.encode('utf-8')
-            else:
-                hash_value = hash_value.encode('utf-8')
-
+        result = False
         try:
             userBytes = userPassword.encode('utf-8')
             print(userBytes)
@@ -49,7 +39,11 @@ def login(username, userPassword):
             return False
 
         if result:
+<<<<<<< HEAD
             #return SQLF.addSession(SQLF.getAccountIDFromUsername(username))
+=======
+            SQLF.addSession(SQLF.getAccountIDFromUsername(username))
+>>>>>>> main
             return True
         return False
         

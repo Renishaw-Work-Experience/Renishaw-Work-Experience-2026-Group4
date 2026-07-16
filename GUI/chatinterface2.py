@@ -14,7 +14,10 @@ from client import sender
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # messagelist = [{"timestamp":2375758535, "message":"hellothisisatestmessagetodisplay", "senderid":234}, {"timestamp":34587345983, "message":"another mdfgiuherfuivhbevuyebvuyfbviubyifuvbfdiubveiuvbdfivubeiuvbeiuvbdfiuvbfdiuvbsiuvbfdiuvberiuvbreiuvbreiubvfsiuvbsdfiuvbdfiuvbfdiuvbdfiuvbfdeviubdfessage", "senderid":233345345348954},{"timestamp":34587345983, "message":"another message", "senderid":234353454338954},{"timestamp":34587345983, "message":"another message", "senderid":23334534348954},{"timestamp":34587345983, "message":"another message", "senderid":2335464538954},{"timestamp":34587345983, "message":"another message", "senderid":233895546454},{"timestamp":3458732343245983, "message":"another message", "senderid":345345},{"timestamp":43534534, "message":"another message", "senderid":345345},{"timestamp":34587345983, "message":"another message", "senderid":34543}]
-session = None
+try:
+    print(session)
+except NameError:
+    session = None
 
 def set_session(s):
     global session
@@ -126,7 +129,8 @@ def start_app():
         process = subprocess.Popen([sys.executable, os.path.join(script_dir, "createnewchatwindow.py")])
     
     def showChatInfo():
-        process = subprocess.Popen([sys.executable, os.path.join(script_dir, "createnewchatwindow.py")]) # TODO: CHANGE FILENAME
+        pass
+        # process = subprocess.Popen([sys.executable, os.path.join(script_dir, "chatUserListWindow.py")]) # TODO: CHANGE FILENAME
 
     
 

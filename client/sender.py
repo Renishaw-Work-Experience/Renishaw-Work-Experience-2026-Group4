@@ -77,6 +77,20 @@ class session:
         except Exception as e:
             print("Error retrieving chat history:", e)
 
+    def getAllUsers(self):
+        try:
+            response = requests.get(address + "/listener/get_all_users")
+            if response.status_code == 200:
+                print("All users received:", response.json())
+                return response.json()
+            else:
+                print("Failed to retrieve all users. Status code:", response.status_code)
+                return []
+        except Exception as e:
+            print("Error retrieving all users:", e)
+            return []
+
+
     def inviteToChat(self, room_id, user_id):
         try:
             invite_data = {"RoomID": room_id, "UserID": user_id, "senderID":self.senderID}

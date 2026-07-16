@@ -42,12 +42,14 @@ def login(username, userPassword):
 
         try:
             userBytes = userPassword.encode('utf-8')
+            print(userBytes)
             result = bcrypt.checkpw(userBytes, hash_value)
         except Exception as exc:
             print("Error checking password:", exc)
             return False
 
         if result:
-            return SQLF.addSession(SQLF.getAccountIDFromUsername(username))
+            #return SQLF.addSession(SQLF.getAccountIDFromUsername(username))
+            return True
         return False
         

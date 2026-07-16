@@ -37,15 +37,6 @@ def addChatRoom(roomID, name, members):
            INSERT INTO ChatRooms (name, {", ".join([f"userID{members.index(x) + 1}" for x in members])}) VALUES ({name}, {str(members)[1:-1]});
     """)
 
-def addSession(userID, sessionID=None, timestamp=None):
-    if sessionID is None:
-        sessionID = ""
-    if timestamp is None:
-        timestamp = ""
-    runSQL(f"""
-        INSERT INTO Sessions (sessionID, userID, timestamp) VALUES ("{sessionID}", {userID}, "{timestamp}");
-    """)
-
 def getUsernameByID(userID):
     return getData("Accounts", "username", "accountID", userID)
     

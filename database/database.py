@@ -24,7 +24,7 @@ def runSQL(statement):
 
 def addMessage(senderID, chatRoomID, content):
     runSQL(f"""
-        INSERT INTO Messages (senderID, chatRoomID, content,TimeSent) VALUES ({senderID}, {chatRoomID}, "{content}",{time.time()});
+        INSERT INTO Messages (senderID, chatRoomID, content) VALUES ("{senderID}", "{chatRoomID}", "{content}");
     """)
 
 def addAccount(username, password, salt):
@@ -55,6 +55,11 @@ def getAccountIDFromUsername(username):
 
 def getPasswordHashFromUsername(username):
     return getData("Accounts", "password", "username", username)
+
+def getAllMessages():
+    messages = getDataByQuery("SELECT * FROM Messages;")
+    messages_list = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4]} for row in messages]
+    return messages_list
 
 def printChatRoom(roomID):
     rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID} ORDER BY TimeSent ASC;")

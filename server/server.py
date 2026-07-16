@@ -57,10 +57,12 @@ def sendMessage():
     sender_id = data.get("senderID") or data.get("sender_id")
     room_id = data.get("roomID") or data.get("room_id")
     message = data.get("message")
-    if sender_id is None or room_id is None or message is None:
-        return jsonify({"status": "error", "message": "Missing senderID, roomID, or message"}), 400
+    print(f"Received message from senderID: {sender_id}, roomID: {room_id}, message: {message}")
+    # if sender_id is None or room_id is None or message is None:
+    #     return jsonify({"status": "error", "message": "Missing senderID, roomID, or message"}), 400
 
     database.addMessage(sender_id, room_id, message)
+    print(f"Message stored in database: {message} from senderID: {sender_id} in roomID: {room_id}")
     return jsonify({"status": "received", "timestamp": data.get("timestamp", time.time())}), 200
 
 
@@ -76,6 +78,21 @@ def requestChatHistory():
     messages = database.getMessages(roomID)
 
     return jsonify({"status": "chat history requested", "roomID": roomID, "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
+
+@app.route('/listener/get_all_messages', methods=['GET'])
+def getAllMessages():
+    print("Received request to retrieve all messages")
+    # auth_error = requireAuthenticatedUser(request.get_json())
+    print("Authentication check completed")
+    # if auth_error:
+        # print("Unauthorized access attempt to get all messages")
+        # return auth_error
+    
+    print("Retrieving all messages from the database")
+    messages = database.getAllMessages()
+    return jsonify({"status": "all messages retrieved", "messages": messages}), 200
+
+
 
 @app.route('/listener/chat_create', methods=['POST'])
 def createChatRoomRequest():

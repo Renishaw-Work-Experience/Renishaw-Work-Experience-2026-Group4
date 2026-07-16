@@ -1,16 +1,35 @@
 import customtkinter as ctk
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
 
 ctk.set_appearance_mode("light")  
-ctk.set_default_color_theme("blue") 
+ctk.set_default_color_theme("blue")
 
-dynList = [
-    "Alice Smith",
-    "Bob Jones",
-    "Charlie Brown",
-    "Diana Prince",
-    "Evan Wright",
-    "Fiona Gallagher"
-]
+from database import database
+
+dynList  = database.getDataByQuery("""
+                                   SELECT AccountID
+                                   FROM Accounts""")
+
+name_List = database.getDataByQuery("""
+                                   SELECT Username 
+                                   FROM Accounts""")
+
+
+# dynList = [
+#     "Alice Smith",
+#     "Bob Jones",
+#     "Charlie Brown",
+#     "Diana Prince",
+#     "Evan Wright",
+#     "Fiona Gallagher"
+# ]
+
+# dynList = database.get_chatroom_users()
 
 def openUserInfo(userName):
     """Target function executed when a name button is clicked."""

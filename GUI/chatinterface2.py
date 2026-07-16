@@ -48,7 +48,10 @@ def start_app():
 
     def getChatRooms(): # Collect the chat rooms from the server
         #chatroomlist = [{"roomID":1, "name":"testname", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None},{"roomID":2, "name":"ADifferentTestName", "user1ID":1, "user2ID":2, "user3ID":None, "user4ID":None, "user5ID":None}]
-        chatroomlist = session.getRoomsFromUserID()["rooms"]
+        response = session.getRoomsFromUserID()
+        if not response:
+            return
+        chatroomlist = ["rooms"]
         print(chatroomlist)
         return chatroomlist
         # PLACEHOLDER!!!
@@ -92,10 +95,12 @@ def start_app():
     def notificationChatroom(chatRoomID, hasNotification : bool):
         if hasNotification:
             button = findChatButton(chatRoomID)
-            button.configure(fg_color="red")
+            if button:
+                button.configure(fg_color="red")
         else:
             button = findChatButton(chatRoomID)
-            button.configure(fg_color="blue")
+            if button:
+                button.configure(fg_color="blue")
 
     
 

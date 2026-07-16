@@ -165,8 +165,8 @@ def login():
         return jsonify({"status": "error", "message": "Missing username or password"}), 400
     sessionID = None
     try:
-        loginStructure.login(username, password)
-        sessionID = secrets.token_hex(16)
+        if loginStructure.login(username, password):
+            sessionID = secrets.token_hex(16)
     except Exception as exc:
         print("Error validating user", exc)
         sessionID = None
@@ -198,6 +198,7 @@ def signup():
 
 @app.route('/listener/roomMembership', methods=['GET'])
 def getRoomsFromUserID():
+    #return jsonify({"rooms":[database.get]]}),200
     data = request.args
     print(data)
     auth_error = requireAuthenticatedUser(data.to_dict())

@@ -163,21 +163,22 @@ def login():
 
     if not username or not password:
         return jsonify({"status": "error", "message": "Missing username or password"}), 400
-
+    sessionID = None
     try:
-        sessionID = loginStructure.login(username, password)
+        loginStructure.login(username, password)
+        sessionID = secrets.token_hex(16)
     except Exception as exc:
         print("Error validating user", exc)
         sessionID = None
 
     if sessionID:
         userID = SQLF.getAccountIDFromUsername(username)
-        database.addSession(userID,sessionID)
+        database.addSession(userID, sessionID)
         return jsonify({"status": "login successful", "sessionID": sessionID, "userID": userID}), 200
 
     return jsonify({"status": "error", "message": "Invalid username or password"}), 401
 
-@app.route('/listener/signup', methods=['GET'])
+@app.route('/listener/signup', methods=['POST'])
 def signup():
     data = request.get_json(silent=True) or request.form.to_dict() or request.args.to_dict()
     password = data.get("password")
@@ -197,7 +198,6 @@ def signup():
 
 @app.route('/listener/roomMembership', methods=['GET'])
 def getRoomsFromUserID():
-    return jsonify({"rooms":[database.get]]}),200
     data = request.args
     print(data)
     auth_error = requireAuthenticatedUser(data.to_dict())

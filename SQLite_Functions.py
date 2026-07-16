@@ -35,18 +35,12 @@ def addChatRoom(roomID, name, members):
            INSERT INTO ChatRooms (name, {", ".join([f"userID{members.index(x) + 1}" for x in members])}) VALUES ({name}, {str(members)[1:-1]});
     """)
 
-def addSession(userID):
-    try:
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO Sessions (userID) VALUES (?);", (userID,))
-            conn.commit()
-            cursor.execute("SELECT sessionID FROM Sessions WHERE rowid = ?;", (cursor.lastrowid,))
-            row = cursor.fetchone()
-            return row[0] if row else None
-    except sqlite3.OperationalError as e:
-        print("Failed to add session:", e)
-        return None
+def addSession(userID, sessionID=None):
+    if sessionID is None:
+        sessionID = ""
+    runSQL(f"""
+        INSERT INTO Sessions (sessionID, userID) VALUES ("{sessionID}", "{userID}");
+    """)
 
 def getSessionID(userID):
     return getData("Sessions", "sessionID", "userID", userID)

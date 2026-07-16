@@ -42,7 +42,7 @@ def start_app():
             widget.destroy()
         for message in messages:
             x = message["message"]
-            useridformessage = message["senderid"]
+            useridformessage = message["senderID"]
             messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{useridformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
             messagedisplay.pack(padx=5, pady=5, anchor="w")
 
@@ -51,7 +51,7 @@ def start_app():
         response = session.getRoomsFromUserID()
         if not response:
             return
-        chatroomlist = ["rooms"]
+        chatroomlist = response
         print(chatroomlist)
         return chatroomlist
         # PLACEHOLDER!!!

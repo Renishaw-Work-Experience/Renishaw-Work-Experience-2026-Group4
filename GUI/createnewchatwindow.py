@@ -2,10 +2,21 @@ import customtkinter
 from PIL import Image
 import os
 import sys
+from pathlib import Path
+import chatinterface2 as chatinterface
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+from client import sender
+
+
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 groupchatusernameentries = []
+
+
 
 def addnewperson():
     entry = customtkinter.CTkEntry(personlistframe, placeholder_text="Enter persons username", height=50, width=400, fg_color="white")
@@ -13,13 +24,27 @@ def addnewperson():
     groupchatusernameentries.append(entry)
 
 def createnewchat():
-    for username in groupchatusernameentries:
-        print(username.get())
+    userIDs = []
+    session = chatinterface.getSession()
+    invalidUsernamesIdx = []
+    for idx, username in enumerate(groupchatusernameentries):
+        userID = sender.ID_from_username(username)
+        if userID:
+            userIDs.append(userID)
+        else:
+            invalidUsernamesIdx.append(idx)
+    invalidUsernamesIdx.reverse()
+    for i in invalidUsernamesIdx:
+        username.pop(i)
+    username.append(sender.usernameFromID(session.userID))
+
+
+    userIDs.append(session.senderID)
+    
 
     chatname = chatnameentry.get()
     print(chatname)
     
-    # Insert code here to pass in chat name and usernames to create the new chat 
 
     sys.exit()
 

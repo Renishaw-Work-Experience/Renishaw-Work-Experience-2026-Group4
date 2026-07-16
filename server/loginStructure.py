@@ -49,6 +49,5 @@ def login(username, userPassword):
 
         if result:
             return SQLF.addSession(SQLF.getAccountIDFromUsername(username))
-        print("Incorrect password.")
         return False
-        return False
+        

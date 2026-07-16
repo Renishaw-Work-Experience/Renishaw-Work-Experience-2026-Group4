@@ -204,9 +204,15 @@ def start_app():
     print(chatRoomButtons)
     notificationChatroom(1, True)
     
+    global messages_cache 
+    messages_cache = [{"timeSent":0}]
     def printit():
-        threading.Timer(1, printit).start()
+        global messages_cache
+        threading.Timer(5, printit).start()
         messages = sender.getAllMessages()
+        if messages[-1]["timeSent"] == messages_cache[-1]["timeSent"]:
+            return
+        messages_cache = messages
         print("Messages received:", messages)
         for widget in chatcontent.winfo_children():
             widget.destroy()

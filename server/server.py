@@ -215,7 +215,21 @@ def getUsernameFromID():
     return jsonify(database.getUsernameByID(data["userID"]))
 
 
+def userDataToJSON(userData):
+    user_list = []
+    for user in userData:
+        user_list.append({
+            "accountID": user[0],
+            "username": user[1]
+        })
+    return user_list
+
+@app.route("/listener/get_all_users",methods=['GET'])
+def getAllUsers():
+    users = database.getDataByQuery("SELECT accountID, username FROM Accounts")
+    return jsonify(userDataToJSON(users)), 200
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)   
-
 

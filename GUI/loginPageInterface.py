@@ -16,6 +16,8 @@ from client import sender
 main = tk.Tk()
 
 
+
+
 def on_close():
     main.destroy()
     raise SystemExit

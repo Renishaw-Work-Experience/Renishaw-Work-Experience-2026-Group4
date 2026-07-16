@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import json
 import sqlite3
+import os
 import sys
 from pathlib import Path
 
@@ -8,14 +9,30 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from database import database
+# dynList  = database.getDataByQuery("""
+#                                    SELECT AccountID, Username
+#                                    FROM Accounts""")
 
-dynList  = database.getDataByQuery("""
-                                   SELECT AccountID, Username
-                                   FROM Accounts""")
+
 
 ctk.set_appearance_mode("light")  
 ctk.set_default_color_theme("blue") 
+
+# with sqlite3.connect(db_path) as conn:
+#     conn.row_factory = sqlite3.Row
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT accountID, username FROM Accounts")
+#     rows = cursor.fetchall()
+
+from GUI import chatinterface2
+session = chatinterface2.getSession()
+
+
+users = session.getAllUsers()
+print(users)
+
+json_text = json.dumps(users, indent=2)
+print(json_text)
 
 currentUser = {"Alice Smith": {"userId": "Id1", "password": "password1", "rooms": ["room1", "room2"]}}
 

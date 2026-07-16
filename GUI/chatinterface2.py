@@ -1,9 +1,11 @@
+import threading
 import customtkinter 
 from PIL import Image
 import os
 from pathlib import Path
 import sys 
 import subprocess
+
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -26,7 +28,6 @@ chatRoomButtons = []
 
 
 def start_app():
-
     """Create and run the chat UI. Call this after successful login."""
     app = customtkinter.CTk()
     app.geometry("1000x600")
@@ -199,7 +200,20 @@ def start_app():
     print(chatRoomButtons)
     notificationChatroom(1, True)
     
+    def printit():
+        threading.Timer(1, printit).start()
+        messages = sender.getAllMessages()
+        print("Messages received:", messages)
+        for widget in chatcontent.winfo_children():
+            widget.destroy()
+        for message in messages:
+            x = message["content"]
+            useridformessage = message["senderID"]
+            messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{useridformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
+            messagedisplay.pack(padx=5, pady=5, anchor="w")
+    printit()
     app.mainloop()
+
 
     
 

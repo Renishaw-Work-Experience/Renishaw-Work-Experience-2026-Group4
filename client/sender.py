@@ -5,6 +5,17 @@ address = "http://127.0.0.1:5000"
 send_listener = "/listener"
 request_chat_history_listener = "/listener/chat_history"
 
+def getAllMessages():
+    try:
+        response = requests.get(address + "/listener/get_all_messages")
+        if response.status_code == 200:
+            print("All messages received:", response.json())
+            return response.json()["messages"]
+        else:
+            print("Failed to retrieve all messages. Status code:", response.status_code)
+    except Exception as e:
+        print("Error retrieving all messages:", e)
+
 #RoomID, message, senderID, receiverID, timestamp added in function
 def login( username, password):
     try:
@@ -109,6 +120,7 @@ class session:
                 print("Failed to retrieve chat room info. Status code:", response.status_code)
         except Exception as e:
             print("Error retrieving chat room info:", e)
+
 
     def getRoomsFromUserID(self):
         request = {"timestamp":time.time(),"senderID":self.senderID,"sessionID":self.sessionID}

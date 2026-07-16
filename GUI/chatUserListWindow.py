@@ -1,6 +1,18 @@
 import customtkinter as ctk
 import json
 import sqlite3
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+
+from database import database
+
+dynList  = database.getDataByQuery("""
+                                   SELECT AccountID, Username
+                                   FROM Accounts""")
 
 ctk.set_appearance_mode("light")  
 ctk.set_default_color_theme("blue") 

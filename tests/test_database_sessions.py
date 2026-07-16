@@ -47,7 +47,7 @@ class SessionDatabaseTests(unittest.TestCase):
         self.temp_dir.cleanup()
 
     def test_add_session_persists_session_id_and_timestamp(self):
-        database.addSession(1, "session-123", "2026-07-15 12:34:56")
+        database.addSession(1)
 
         with sqlite3.connect(self.temp_db) as conn:
             row = conn.execute(

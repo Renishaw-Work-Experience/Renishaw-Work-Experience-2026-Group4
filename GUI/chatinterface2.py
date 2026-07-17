@@ -45,7 +45,7 @@ def start_app():
         for widget in chatcontent.winfo_children():
             widget.destroy()
         for message in messages:
-            x = message["message"]
+            x = message["content"]
             useridformessage = message["senderID"]
             usernameformessage = message["senderName"]
             messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{usernameformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)

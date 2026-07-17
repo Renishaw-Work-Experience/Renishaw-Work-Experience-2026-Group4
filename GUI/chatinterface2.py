@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import sys 
 import subprocess
+from client import sender
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -47,7 +48,8 @@ def start_app():
         for message in messages:
             x = message["message"]
             useridformessage = message["senderID"]
-            messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{useridformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
+            usernameformessage = sender.usernameFromID(useridformessage)
+            messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{usernameformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
             messagedisplay.pack(padx=5, pady=5, anchor="w")
 
     def getChatRooms(): # Collect the chat rooms from the server

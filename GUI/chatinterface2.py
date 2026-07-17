@@ -46,7 +46,7 @@ def start_app():
         for message in messages:
             x = message["message"]
             useridformessage = message["senderID"]
-            usernameformessage = sender.usernameFromID(useridformessage)
+            usernameformessage = message["senderName"]
             messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{usernameformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
             messagedisplay.pack(padx=5, pady=5, anchor="w")
 
@@ -220,7 +220,7 @@ def start_app():
             for message in messages:
                 x = message["content"]
                 useridformessage = message["senderID"]
-                usernameformessage = sender.usernameFromID(useridformessage)
+                usernameformessage = message["senderName"]
                 messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{usernameformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
                 messagedisplay.pack(padx=5, pady=5, anchor="w")
     printit()

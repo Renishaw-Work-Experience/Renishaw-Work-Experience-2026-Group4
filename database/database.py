@@ -58,7 +58,7 @@ def getPasswordHashFromUsername(username):
 
 def getAllMessages():
     messages = getDataByQuery("SELECT * FROM Messages;")
-    messages_list = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4]} for row in messages]
+    messages_list = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4], "senderName": getUsernameByID(row[1])} for row in messages]
     return messages_list
 
 def printChatRoom(roomID):

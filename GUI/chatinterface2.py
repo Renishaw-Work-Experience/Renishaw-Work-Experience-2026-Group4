@@ -6,7 +6,6 @@ from pathlib import Path
 import sys 
 import subprocess
 
-
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
@@ -48,7 +47,8 @@ def start_app():
         for message in messages:
             x = message["message"]
             useridformessage = message["senderID"]
-            messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{useridformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
+            usernameformessage = message["senderName"]
+            messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{usernameformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
             messagedisplay.pack(padx=5, pady=5, anchor="w")
 
     def getChatRooms(): # Collect the chat rooms from the server
@@ -215,6 +215,8 @@ def start_app():
         if not currentRoomID:
             return
         messages = session.requestChatHistory(currentRoomID)
+        if len(messages)== 0:
+          return
         if messages[-1]["timeSent"] == messages_cache[-1]["timeSent"]:
             return
         messages_cache = messages

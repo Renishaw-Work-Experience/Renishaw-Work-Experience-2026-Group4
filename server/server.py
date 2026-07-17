@@ -80,6 +80,9 @@ def requestChatHistory():
     except Exception:
         print(Exception)
         return jsonify({"message ":"internal server error"}), 500
+    
+    print(messages)
+    print(database.getUsernameByID(messages[0]["senderID"]))
 
     return jsonify({"status": "chat history requested", "roomID": roomID, "messages": [{"timeSent": message["timeSent"], "content": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
 

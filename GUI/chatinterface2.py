@@ -36,6 +36,7 @@ def start_app():
     app.title("Chat messaging service")
 
     def loadchats(messages, room, label):
+
         nonlocal currentRoomID
         chatname = room["name"]
         currentRoomID = room["roomID"]
@@ -206,23 +207,27 @@ def start_app():
     
     global messages_cache 
     messages_cache = [{"timeSent":0}]
+    
     def printit():
         global messages_cache
+        global session
         threading.Timer(5, printit).start()
-        messages = sender.getAllMessages()
-        if len(messages) != 0:
-            if messages[-1]["timeSent"] == messages_cache[-1]["timeSent"]:
-                return
-            messages_cache = messages
-            print("Messages received:", messages)
-            for widget in chatcontent.winfo_children():
-                widget.destroy()
-            for message in messages:
-                x = message["content"]
-                useridformessage = message["senderID"]
-                usernameformessage = message["senderName"]
-                messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{usernameformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
-                messagedisplay.pack(padx=5, pady=5, anchor="w")
+        if not currentRoomID:
+            return
+        messages = session.requestChatHistory(currentRoomID)
+        if len(messages)== 0:
+          return
+        if messages[-1]["timeSent"] == messages_cache[-1]["timeSent"]:
+            return
+        messages_cache = messages
+        print("Messages received:", messages)
+        for widget in chatcontent.winfo_children():
+            widget.destroy()
+        for message in messages:
+            x = message["content"]
+            useridformessage = message["senderID"]
+            messagedisplay = customtkinter.CTkLabel(chatcontent, fg_color="grey56", text=(f"{useridformessage}: {x}"), corner_radius=10, justify="left", anchor="w", wraplength=500)
+            messagedisplay.pack(padx=5, pady=5, anchor="w")
     printit()
     app.mainloop()
 

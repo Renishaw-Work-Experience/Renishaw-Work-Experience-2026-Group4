@@ -106,7 +106,7 @@ def getData(table, outputField, queryField, data): # returns data from another f
     
 def getMessages(roomID, userID = None):
     rows = getDataByQuery(f"SELECT * FROM Messages WHERE chatRoomID = {roomID}{"" if userID == None else f"AND senderID = {userID}"} ORDER BY TimeSent ASC;")
-    messages = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4]} for row in rows]
+    messages = [{"messageID": row[0], "senderID": row[1], "chatRoomID": row[2], "content": row[3], "timeSent": row[4], "senderName": getUsernameByID(row[1])} for row in rows]
     return messages
 
 def getRoomsFromUserID(userID):

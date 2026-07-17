@@ -84,7 +84,7 @@ def requestChatHistory():
     print(messages)
     print(database.getUsernameByID(messages[0]["senderID"]))
 
-    return jsonify({"status": "chat history requested", "roomID": roomID, "messages": [{"timeSent": message["timeSent"], "content": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
+    return jsonify({"status": "chat history requested", "roomID": roomID, "messages": [{"timeSent": message["timeSent"], "content": message["content"],"senderID": message["senderID"], "senderName": message["senderName"]} for message in messages]}), 200
 
 @app.route('/listener/get_all_messages', methods=['GET'])
 def getAllMessages():

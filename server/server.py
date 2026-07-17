@@ -4,13 +4,17 @@ import sys
 from pathlib import Path
 import secrets
 
+
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
+import bots
 from database import database
 import SQLite_Functions as SQLF
 import loginStructure
+
+#import bots
 
 app = Flask(__name__)
 
@@ -62,6 +66,18 @@ def sendMessage():
     #     return jsonify({"status": "error", "message": "Missing senderID, roomID, or message"}), 400
 
     database.addMessage(sender_id, room_id, message)
+
+
+
+    message_words = message.split()
+    print(bots.hooks.keys())
+    if message_words[0] in bots.hooks.keys():
+        hook_function = bots.hooks[message_words[0]][0]
+        bot_message = hook_function(message_words[1])
+        database.addMessage(bots.hooks[message_words[0]][1], room_id, bot_message)
+        print("bot message:",bot_message)
+
+
     print(f"Message stored in database: {message} from senderID: {sender_id} in roomID: {room_id}")
     return jsonify({"status": "received", "timestamp": data.get("timestamp", time.time())}), 200
 

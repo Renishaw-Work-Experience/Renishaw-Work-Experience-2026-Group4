@@ -247,3 +247,7 @@ def getUserIDFromSessionID(SessionID):
 
 def getChatRoomInfo(RoomID):
     pass
+
+#runSQL(f"""
+#    INSERT INTO Accounts (accountID,username, password, salt) VALUES (-1,"contexto", "password", "salt");
+#""")

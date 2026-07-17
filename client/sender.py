@@ -1,9 +1,9 @@
 import requests
 import time
 
-# address = "http://127.0.0.1:5000"
+address = "http://127.0.0.1:5000"
 #address = "http://10.70.0.1:5000"
-address = "http://192.168.26.2:5000"
+#address = "http://192.168.26.2:5000"
 send_listener = "/listener"
 request_chat_history_listener = "/listener/chat_history"
 

@@ -81,7 +81,7 @@ def requestChatHistory():
         print(Exception)
         return jsonify({"message ":"internal server error"}), 500
 
-    return jsonify({"status": "chat history requested", "roomID": roomID, "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"]} for message in messages]}), 200
+    return jsonify({"status": "chat history requested", "roomID": roomID, "messages": [{"timestamp": time.time(), "message": message["content"],"senderID": message["senderID"], "senderName": database.getUsernameByID(message["senderID"])} for message in messages]}), 200
 
 @app.route('/listener/get_all_messages', methods=['GET'])
 def getAllMessages():

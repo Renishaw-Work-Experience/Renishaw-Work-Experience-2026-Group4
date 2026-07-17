@@ -37,6 +37,7 @@ def start_app():
     app.title("Chat messaging service")
 
     def loadchats(messages, room, label):
+
         nonlocal currentRoomID
         chatname = room["name"]
         currentRoomID = room["roomID"]
@@ -206,10 +207,14 @@ def start_app():
     
     global messages_cache 
     messages_cache = [{"timeSent":0}]
+    
     def printit():
         global messages_cache
+        global session
         threading.Timer(5, printit).start()
-        messages = sender.getAllMessages()
+        if not currentRoomID:
+            return
+        messages = session.requestChatHistory(currentRoomID)
         if messages[-1]["timeSent"] == messages_cache[-1]["timeSent"]:
             return
         messages_cache = messages
